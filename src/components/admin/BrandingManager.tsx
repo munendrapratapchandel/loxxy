@@ -297,7 +297,7 @@ export default function BrandingManager({ settings, onRefresh }: BrandingManager
             required
             value={form.adminPin}
             onChange={(e) => setForm({ ...form, adminPin: e.target.value })}
-            placeholder="loxxy2026"
+            placeholder="Enter passkey"
             className="w-full sm:w-80 px-3 py-2 bg-dark-900 border border-slate-700 rounded-xl text-xs font-mono text-cyan-400 font-bold"
           />
           <p className="text-[11px] text-slate-500 font-mono">

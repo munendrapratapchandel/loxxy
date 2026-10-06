@@ -12,7 +12,9 @@ import {
   MediaItem,
   MatchItem,
   NewsItem,
-  TimelineMilestone
+  TimelineMilestone,
+  TeamRole,
+  ClipItem
 } from './types';
 import { calculatePowerIndex } from './powerIndex';
 export { calculatePowerIndex };
@@ -60,6 +62,7 @@ const INITIAL_DATA: LoxxyDatabase = {
       rankings: true,
       compare: true,
       matches: true,
+      clips: true,
       achievements: true,
       dominance: true,
       discord: true
@@ -73,6 +76,7 @@ const INITIAL_DATA: LoxxyDatabase = {
       rankingsPreview: true,
       latestNews: true,
       matches: true,
+      clips: true,
       achievements: true,
       discordCta: true
     }
@@ -610,6 +614,147 @@ const INITIAL_DATA: LoxxyDatabase = {
     { id: 'media-2', name: 'Valkyrie Skin', url: '/skins/valkyrie.png', category: 'skin', uploadedAt: '2026-03-20' },
     { id: 'media-3', name: 'Zephyr Skin', url: '/skins/zephyr.png', category: 'skin', uploadedAt: '2026-04-02' },
     { id: 'media-4', name: 'Default Adventurer Skin', url: '/skins/steve.png', category: 'skin', uploadedAt: '2026-03-01' }
+  ],
+  roles: [
+    {
+      id: 'role-founder',
+      name: 'Founder',
+      color: '#8b5cf6',
+      badgeStyle: 'from-purple-600 to-indigo-600',
+      description: 'Visionary leadership & founder of Loxxy Organization.',
+      isDefault: true
+    },
+    {
+      id: 'role-captain',
+      name: 'Captain',
+      color: '#00f5ff',
+      badgeStyle: 'from-cyan-500 to-blue-600',
+      description: 'Competitive in-game shot caller & roster leader.',
+      isDefault: true
+    },
+    {
+      id: 'role-vanguard',
+      name: 'Vanguard',
+      color: '#f43f5e',
+      badgeStyle: 'from-rose-500 to-red-600',
+      description: 'Frontline assault ace in tournament tier brackets.',
+      isDefault: true
+    },
+    {
+      id: 'role-crystal-ace',
+      name: 'Crystal Ace',
+      color: '#ec4899',
+      badgeStyle: 'from-pink-500 to-rose-600',
+      description: 'Specialist in lethal end crystal PvP & momentum control.',
+      isDefault: true
+    },
+    {
+      id: 'role-duelist',
+      name: 'Duelist',
+      color: '#10b981',
+      badgeStyle: 'from-emerald-500 to-teal-600',
+      description: '1v1 Sword & Axe arena combat specialist.',
+      isDefault: true
+    },
+    {
+      id: 'role-coach',
+      name: 'Coach',
+      color: '#fbbf24',
+      badgeStyle: 'from-amber-400 to-yellow-600',
+      description: 'VOD analysis, strategy master & training coordinator.',
+      isDefault: true
+    },
+    {
+      id: 'role-creator',
+      name: 'Content Creator',
+      color: '#a855f7',
+      badgeStyle: 'from-purple-500 to-pink-500',
+      description: 'Showcasing Loxxy clutches and tournament streams.',
+      isDefault: true
+    },
+    {
+      id: 'role-builder',
+      name: 'Architect',
+      color: '#38bdf8',
+      badgeStyle: 'from-sky-400 to-blue-500',
+      description: 'Master builder for competitive scrim arenas & hubs.',
+      isDefault: true
+    },
+    {
+      id: 'role-member',
+      name: 'Member',
+      color: '#94a3b8',
+      badgeStyle: 'from-slate-600 to-slate-800',
+      description: 'Active roster competitor in Loxxy clan.',
+      isDefault: true
+    }
+  ],
+  clips: [
+    {
+      id: 'clip-1',
+      title: 'Professorx 1v4 Crystal Clutch in Grand Finals',
+      category: 'Tournament Clutch',
+      mediaType: 'video',
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1200&auto=format&fit=crop',
+      authorOrPlayer: 'Professorx',
+      gamemode: 'Crystal PvP',
+      date: '2026-09-18',
+      description: 'Down 1v4 in the final 30 seconds of game 5, Professorx executes a double anchor pop and frame-perfect crystal blast to claim the championship.',
+      featured: true
+    },
+    {
+      id: 'clip-2',
+      title: 'Valkyrie Frame-Perfect Mace Drop Kill vs HT1 Vanguard',
+      category: '1v1 Duel',
+      mediaType: 'video',
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1200&auto=format&fit=crop',
+      authorOrPlayer: 'Valkyrie',
+      gamemode: 'Mace',
+      date: '2026-08-30',
+      description: 'A 42-block wind charge leap into instant smash critical against Tier 1 invitational champion.',
+      featured: true
+    },
+    {
+      id: 'clip-3',
+      title: 'CCL Champions Trophy Ceremony & Arena Stage',
+      category: 'Screenshot / Photo',
+      mediaType: 'image',
+      url: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1200&auto=format&fit=crop',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1200&auto=format&fit=crop',
+      authorOrPlayer: 'Loxxy Team',
+      gamemode: 'Tournament',
+      date: '2026-09-19',
+      description: 'Full team victory photo after sweeping the 2026 Continental Clan League with an undefeated 14-0 streak.',
+      featured: true
+    },
+    {
+      id: 'clip-4',
+      title: 'Zephyr High Ground Anchor Trap Defense',
+      category: 'Tournament Clutch',
+      mediaType: 'video',
+      url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1200&auto=format&fit=crop',
+      authorOrPlayer: 'Zephyr',
+      gamemode: 'Crystal PvP',
+      date: '2026-07-22',
+      description: 'Baiting three rushers into a obsidian trap before detonating respawn anchor in UHC bracket playoffs.',
+      featured: false
+    },
+    {
+      id: 'clip-5',
+      title: 'Loxxy Arena Scrim Match Point Screenshot',
+      category: 'Screenshot / Photo',
+      mediaType: 'image',
+      url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1200&auto=format&fit=crop',
+      authorOrPlayer: 'Professorx',
+      gamemode: 'Sword PvP',
+      date: '2026-06-15',
+      description: 'Clean combat arena screenshot captured during the tier testing tournament.',
+      featured: false
+    }
   ]
 };
 
@@ -626,11 +771,21 @@ function ensureDbFile(): LoxxyDatabase {
 
     // Backward compatibility merge
     let modified = false;
+    if (!parsed.roles || parsed.roles.length === 0) { parsed.roles = INITIAL_DATA.roles; modified = true; }
+    if (!parsed.clips) { parsed.clips = INITIAL_DATA.clips; modified = true; }
     if (!parsed.matches) { parsed.matches = INITIAL_DATA.matches; modified = true; }
     if (!parsed.news) { parsed.news = INITIAL_DATA.news; modified = true; }
     if (!parsed.timelineMilestones) { parsed.timelineMilestones = INITIAL_DATA.timelineMilestones; modified = true; }
     if (!parsed.settings.liveStatus) { parsed.settings.liveStatus = INITIAL_DATA.settings.liveStatus; modified = true; }
     if (!parsed.settings.adminPin) { parsed.settings.adminPin = 'loxxy2026'; modified = true; }
+    if (parsed.settings.navigation && parsed.settings.navigation.clips === undefined) {
+      parsed.settings.navigation.clips = true;
+      modified = true;
+    }
+    if (parsed.settings.sections && parsed.settings.sections.clips === undefined) {
+      parsed.settings.sections.clips = true;
+      modified = true;
+    }
     if (parsed.settings.navigation && parsed.settings.navigation.rankings === undefined) {
       parsed.settings.navigation.rankings = true;
       parsed.settings.navigation.compare = true;
@@ -772,4 +927,72 @@ export function getDominanceStats(): DominanceStat[] {
 
 export function getRecruitmentApplications(): RecruitmentApplication[] {
   return getDatabase().recruitmentApplications;
+}
+
+export function getRoles(): TeamRole[] {
+  return getDatabase().roles || [];
+}
+
+export function createRole(role: TeamRole): TeamRole {
+  const db = getDatabase();
+  if (!db.roles) db.roles = [];
+  db.roles.push(role);
+  saveDatabase(db);
+  return role;
+}
+
+export function updateRole(id: string, partial: Partial<TeamRole>): TeamRole | null {
+  const db = getDatabase();
+  if (!db.roles) db.roles = [];
+  const index = db.roles.findIndex(r => r.id === id);
+  if (index === -1) return null;
+  db.roles[index] = { ...db.roles[index], ...partial };
+  saveDatabase(db);
+  return db.roles[index];
+}
+
+export function deleteRole(id: string): boolean {
+  const db = getDatabase();
+  if (!db.roles) return false;
+  const initialLen = db.roles.length;
+  db.roles = db.roles.filter(r => r.id !== id);
+  if (db.roles.length !== initialLen) {
+    saveDatabase(db);
+    return true;
+  }
+  return false;
+}
+
+export function getClips(): ClipItem[] {
+  return getDatabase().clips || [];
+}
+
+export function createClip(clip: ClipItem): ClipItem {
+  const db = getDatabase();
+  if (!db.clips) db.clips = [];
+  db.clips.unshift(clip);
+  saveDatabase(db);
+  return clip;
+}
+
+export function updateClip(id: string, partial: Partial<ClipItem>): ClipItem | null {
+  const db = getDatabase();
+  if (!db.clips) db.clips = [];
+  const index = db.clips.findIndex(c => c.id === id);
+  if (index === -1) return null;
+  db.clips[index] = { ...db.clips[index], ...partial };
+  saveDatabase(db);
+  return db.clips[index];
+}
+
+export function deleteClip(id: string): boolean {
+  const db = getDatabase();
+  if (!db.clips) return false;
+  const initialLen = db.clips.length;
+  db.clips = db.clips.filter(c => c.id !== id);
+  if (db.clips.length !== initialLen) {
+    saveDatabase(db);
+    return true;
+  }
+  return false;
 }

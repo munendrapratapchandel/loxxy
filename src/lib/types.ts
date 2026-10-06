@@ -38,6 +38,7 @@ export interface SiteSettings {
     rankings: boolean;
     compare: boolean;
     matches: boolean;
+    clips: boolean;
     achievements: boolean;
     dominance: boolean;
     discord: boolean;
@@ -51,6 +52,7 @@ export interface SiteSettings {
     rankingsPreview: boolean;
     latestNews: boolean;
     matches: boolean;
+    clips: boolean;
     achievements: boolean;
     discordCta: boolean;
   };
@@ -185,6 +187,29 @@ export interface RecruitmentApplication {
   status: 'Pending' | 'Reviewed' | 'Accepted' | 'Rejected';
 }
 
+export interface TeamRole {
+  id: string;
+  name: string;
+  color: string;
+  badgeStyle?: string;
+  description?: string;
+  isDefault?: boolean;
+}
+
+export interface ClipItem {
+  id: string;
+  title: string;
+  category: 'Tournament Clutch' | '1v1 Duel' | 'Montage' | 'Screenshot / Photo' | 'VOD';
+  mediaType: 'video' | 'image';
+  url: string;
+  thumbnailUrl?: string;
+  authorOrPlayer?: string;
+  gamemode?: string;
+  date: string;
+  description?: string;
+  featured?: boolean;
+}
+
 export interface MediaItem {
   id: string;
   name: string;
@@ -198,6 +223,8 @@ export interface LoxxyDatabase {
   players: Player[];
   tiers: TierDefinition[];
   gamemodes: GamemodeDefinition[];
+  roles: TeamRole[];
+  clips: ClipItem[];
   achievements: Achievement[];
   timelineMilestones: TimelineMilestone[];
   matches: MatchItem[];

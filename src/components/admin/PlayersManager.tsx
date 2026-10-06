@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Player, TierDefinition, GamemodeDefinition } from '@/lib/types';
+import { Player, TierDefinition, GamemodeDefinition, TeamRole } from '@/lib/types';
 import TierBadge from '@/components/tier/TierBadge';
 import MinecraftSkinViewer from '@/components/skin/MinecraftSkinViewer';
 import {
@@ -24,6 +24,7 @@ interface PlayersManagerProps {
   players: Player[];
   tiers: TierDefinition[];
   gamemodes: GamemodeDefinition[];
+  roles?: TeamRole[];
   onRefresh: () => void;
 }
 
@@ -31,6 +32,7 @@ export default function PlayersManager({
   players,
   tiers,
   gamemodes,
+  roles = [],
   onRefresh,
 }: PlayersManagerProps) {
   const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
@@ -243,9 +245,23 @@ export default function PlayersManager({
                     >
                       <Star className={`w-4 h-4 ${player.featured ? 'fill-amber-400' : ''}`} />
                     </button>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-dark-850 border border-slate-700 text-brand-300">
-                      {player.role}
-                    </span>
+                    {(() => {
+                      const roleObj = roles.find(r => r.name.toLowerCase() === player.role.toLowerCase());
+                      const color = roleObj ? roleObj.color : '#8b5cf6';
+                      return (
+                        <span
+                          className="text-[11px] font-mono px-2 py-0.5 rounded font-bold"
+                          style={{
+                            backgroundColor: `${color}18`,
+                            color: color,
+                            border: `1px solid ${color}45`,
+                            boxShadow: `0 0 8px ${color}20`
+                          }}
+                        >
+                          {player.role}
+                        </span>
+                      );
+                    })()}
                   </div>
                   <span className="text-[10px] font-mono text-slate-500">{player.status}</span>
                 </div>
@@ -383,17 +399,33 @@ export default function PlayersManager({
                     onChange={(e) => setEditingPlayer({ ...editingPlayer, role: e.target.value })}
                     className="w-full px-3 py-2 bg-dark-850 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-cyan-400 cursor-pointer"
                   >
-                    <option value="Founder">Founder</option>
-                    <option value="Owner">Owner</option>
-                    <option value="Co-Owner">Co-Owner</option>
-                    <option value="Manager">Manager</option>
-                    <option value="Captain">Captain</option>
-                    <option value="PvP Player">PvP Player</option>
-                    <option value="Content Creator">Content Creator</option>
-                    <option value="Builder">Builder</option>
-                    <option value="Redstoner">Redstoner</option>
-                    <option value="Trial">Trial</option>
-                    <option value="Reserve">Reserve</option>
+                    {roles && roles.length > 0 ? (
+                      roles.map((r) => (
+                        <option key={r.id} value={r.name}>
+                          {r.name}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="Founder">Founder</option>
+                        <option value="Captain">Captain</option>
+                        <option value="Vanguard">Vanguard</option>
+                        <option value="Crystal Ace">Crystal Ace</option>
+                        <option value="Duelist">Duelist</option>
+                        <option value="Coach">Coach</option>
+                        <option value="Content Creator">Content Creator</option>
+                        <option value="Architect">Architect</option>
+                        <option value="Member">Member</option>
+                        <option value="Trial">Trial</option>
+                      </>
+                    )}
+                    {editingPlayer.role &&
+                      roles &&
+                      !roles.some(
+                        (r) => r.name.toLowerCase() === editingPlayer.role.toLowerCase()
+                      ) && (
+                        <option value={editingPlayer.role}>{editingPlayer.role}</option>
+                      )}
                   </select>
                 </div>
               </div>

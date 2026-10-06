@@ -65,7 +65,7 @@ export default function AdminSecurityGate({ correctPin, onAuthenticated }: Admin
               autoFocus
               value={pinInput}
               onChange={(e) => setPinInput(e.target.value)}
-              placeholder="Enter PIN (Default: loxxy2026)"
+              placeholder="Enter administrative passkey"
               className="w-full px-4 py-3 rounded-xl bg-dark-850 border border-slate-700 text-center text-white placeholder-slate-500 font-mono tracking-widest text-sm focus:outline-none focus:border-cyan-400 transition-colors"
             />
           </div>

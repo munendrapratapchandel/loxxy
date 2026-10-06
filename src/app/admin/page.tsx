@@ -15,6 +15,8 @@ import MediaManager from '@/components/admin/MediaManager';
 import SiteSettingsManager from '@/components/admin/SiteSettingsManager';
 import MatchesManager from '@/components/admin/MatchesManager';
 import NewsManager from '@/components/admin/NewsManager';
+import RolesManager from '@/components/admin/RolesManager';
+import ClipsManager from '@/components/admin/ClipsManager';
 import AdminSecurityGate from '@/components/admin/AdminSecurityGate';
 
 import {
@@ -36,7 +38,9 @@ import {
   X,
   Lock,
   Bell,
-  Calendar
+  Calendar,
+  Crown,
+  Film
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -73,6 +77,8 @@ export default function AdminPage() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'players', label: 'Players & 3D Skins', icon: Users, badge: db?.players?.length },
+    { id: 'roles', label: 'Team Roles', icon: Crown, badge: db?.roles?.length },
+    { id: 'clips', label: 'Clips & Media Vault', icon: Film, badge: db?.clips?.length },
     { id: 'tiers', label: 'PvP Tiers & Badges', icon: Shield, badge: db?.tiers?.length },
     { id: 'matches', label: 'Matches & Fixtures', icon: Calendar, badge: db?.matches?.length },
     { id: 'news', label: 'News Dispatch', icon: Bell, badge: db?.news?.length },
@@ -275,6 +281,24 @@ export default function AdminPage() {
               players={db.players}
               tiers={db.tiers}
               gamemodes={db.gamemodes}
+              roles={db.roles || []}
+              onRefresh={fetchDatabase}
+            />
+          )}
+
+          {activeTab === 'roles' && (
+            <RolesManager
+              roles={db.roles || []}
+              players={db.players}
+              onRefresh={fetchDatabase}
+            />
+          )}
+
+          {activeTab === 'clips' && (
+            <ClipsManager
+              clips={db.clips || []}
+              players={db.players}
+              settings={db.settings}
               onRefresh={fetchDatabase}
             />
           )}

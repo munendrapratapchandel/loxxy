@@ -103,8 +103,12 @@ export default function SiteSettingsManager({ settings, onRefresh }: SiteSetting
             {[
               { key: 'home', label: 'Home Page', desc: 'Main landing page route (/)' },
               { key: 'roster', label: 'Team Roster Page', desc: 'Complete athlete directory (/roster)' },
-              { key: 'achievements', label: 'Achievements Page', desc: 'Trophy showcase (/achievements)' },
-              { key: 'dominance', label: 'Dominance Page', desc: 'Competitive statistics (/dominance)' },
+              { key: 'clips', label: 'Clips & Media Page', desc: 'Clutch highlights, video vault & photos (/clips)' },
+              { key: 'rankings', label: 'Rankings Page', desc: 'Power index competitive leaderboards (/rankings)' },
+              { key: 'compare', label: 'Compare Athletes', desc: 'Head-to-head tier & stat comparison (/compare)' },
+              { key: 'matches', label: 'Matches & Fixtures', desc: 'Tournament schedules & results (/matches)' },
+              { key: 'achievements', label: 'Achievements Page', desc: 'Trophy showcase & story timeline (/achievements)' },
+              { key: 'dominance', label: 'Dominance Page', desc: 'Competitive statistics & radar (/dominance)' },
               { key: 'discord', label: 'Discord & Recruitment', desc: 'Community & tryout forms (/discord)' },
             ].map((item) => {
               const active = nav[item.key as keyof typeof nav];

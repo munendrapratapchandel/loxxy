@@ -98,6 +98,13 @@ export default function Footer({ settings }: FooterProps) {
                   Trophies & Dominance
                 </Link>
               </li>
+              {settings?.navigation?.clips !== false && (
+                <li>
+                  <Link href="/clips" className="hover:text-cyan-400 transition-colors">
+                    Clips & Highlights
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/dominance" className="hover:text-cyan-400 transition-colors">
                   Statistical Records
@@ -126,7 +133,7 @@ export default function Footer({ settings }: FooterProps) {
             </div>
           </div>
 
-          {/* Competitive System & Admin */}
+          {/* Competitive System */}
           <div>
             <h4 className="text-xs font-mono uppercase tracking-widest text-slate-300 font-bold mb-4">
               Team Command
@@ -134,13 +141,10 @@ export default function Footer({ settings }: FooterProps) {
             <p className="text-xs text-slate-500 leading-relaxed mb-4">
               Powered by Loxxy Custom Dynamic Tier Engine. All player stats, 3D skins, and achievements updated live.
             </p>
-            <Link
-              href="/admin"
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-900 border border-slate-800 text-xs font-mono text-brand-400 hover:bg-dark-850 hover:border-brand-500/50 transition-colors"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-brand-400" />
-              <span>Admin Control Center</span>
-            </Link>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-dark-900 border border-slate-800 text-xs font-mono text-cyan-400">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span>Competitive Engine Online</span>
+            </div>
           </div>
 
         </div>

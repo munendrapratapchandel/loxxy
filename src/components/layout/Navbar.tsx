@@ -17,7 +17,8 @@ import {
   Sparkles,
   ArrowLeftRight,
   Calendar,
-  Crown
+  Crown,
+  Film
 } from 'lucide-react';
 import { SiteSettings } from '@/lib/types';
 
@@ -36,6 +37,7 @@ export default function Navbar({ settings }: NavbarProps) {
     rankings: true,
     compare: true,
     matches: true,
+    clips: true,
     achievements: true,
     dominance: true,
     discord: true,
@@ -47,6 +49,7 @@ export default function Navbar({ settings }: NavbarProps) {
     { label: 'Rankings', href: '/rankings', show: nav.rankings !== false, icon: Crown },
     { label: 'Compare', href: '/compare', show: nav.compare !== false, icon: ArrowLeftRight },
     { label: 'Matches', href: '/matches', show: nav.matches !== false, icon: Calendar },
+    { label: 'Clips', href: '/clips', show: nav.clips !== false, icon: Film },
     { label: 'Trophies', href: '/achievements', show: nav.achievements, icon: Trophy },
     { label: 'Dominance', href: '/dominance', show: nav.dominance, icon: BarChart2 },
     { label: 'Discord', href: '/discord', show: nav.discord && settings?.discordPageEnabled !== false, icon: MessageSquare },
@@ -131,27 +134,10 @@ export default function Navbar({ settings }: NavbarProps) {
                 <ExternalLink className="w-3 h-3 text-cyan-400" />
               </a>
             )}
-
-            {/* Admin Access Button */}
-            <Link
-              href="/admin"
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-mono text-slate-400 bg-dark-850 border border-slate-800 hover:text-white hover:border-brand-500/50 hover:bg-dark-800 transition-all duration-200"
-              title="Open Admin Command Center"
-            >
-              <Settings className="w-3.5 h-3.5 text-brand-400" />
-              <span>Admin</span>
-            </Link>
           </div>
 
           {/* Mobile Menu Button */}
           <div className="flex lg:hidden items-center gap-2">
-            <Link
-              href="/admin"
-              className="p-2 rounded-lg bg-dark-900 border border-slate-800 text-slate-400"
-              title="Admin"
-            >
-              <Settings className="w-4 h-4 text-brand-400" />
-            </Link>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
               className="p-2 rounded-lg bg-dark-900 border border-slate-800 text-slate-300 hover:text-white"
