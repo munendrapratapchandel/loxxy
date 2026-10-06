@@ -56,7 +56,13 @@
       "discordOnline": true,
       "currentActivity": "Scrimming Tier-1 Invitational Brackets"
     },
-    "adminPin": "loxxy@2580"
+    "adminPin": "loxxy@2580",
+    "supabaseConfig": {
+      "url": "https://hujpvtdpcugielghzwgj.supabase.co",
+      "anonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODQxNTksImV4cCI6MjEwNjg2MDE1OX0.sChHIxY2rSJrI6lTmwMYks59T_zB8vSs0iBpjHz5yvU",
+      "serviceRoleKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTI4NDE1OSwiZXhwIjoyMTA2ODYwMTU5fQ.sqTKvu6pJepa-SSBgI8OtoqiZ6YUd0V6pUgcLljdJ04",
+      "enabled": true
+    }
   },
   "tiers": [
     {

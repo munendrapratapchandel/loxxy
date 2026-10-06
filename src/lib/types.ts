@@ -13,6 +13,12 @@ export interface SiteSettings {
   recruitmentEnabled: boolean;
   maintenanceMode: boolean;
   adminPin: string; // Admin passkey / PIN for security
+  supabaseConfig?: {
+    url: string;
+    anonKey: string;
+    serviceRoleKey: string;
+    enabled: boolean;
+  };
   liveStatus: {
     enabled: boolean;
     membersOnline: number;

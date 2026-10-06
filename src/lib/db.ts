@@ -40,6 +40,12 @@ const INITIAL_DATA: LoxxyDatabase = {
     recruitmentEnabled: true,
     maintenanceMode: false,
     adminPin: 'loxxy@2580',
+    supabaseConfig: {
+      url: 'https://hujpvtdpcugielghzwgj.supabase.co',
+      anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODQxNTksImV4cCI6MjEwNjg2MDE1OX0.sChHIxY2rSJrI6lTmwMYks59T_zB8vSs0iBpjHz5yvU',
+      serviceRoleKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTI4NDE1OSwiZXhwIjoyMTA2ODYwMTU5fQ.sqTKvu6pJepa-SSBgI8OtoqiZ6YUd0V6pUgcLljdJ04',
+      enabled: true
+    },
     liveStatus: {
       enabled: true,
       membersOnline: 24,
@@ -810,19 +816,26 @@ function mergeDefaults(parsed: LoxxyDatabase): void {
   if (!parsed.clips) parsed.clips = INITIAL_DATA.clips;
   if (!parsed.matches) parsed.matches = INITIAL_DATA.matches;
   if (!parsed.news) parsed.news = INITIAL_DATA.news;
-  if (!parsed.timelineMilestones) parsed.timelineMilestones = INITIAL_DATA.timelineMilestones;
+  if (!parsed.gamemodes || parsed.gamemodes.length === 0) parsed.gamemodes = INITIAL_DATA.gamemodes;
+  if (!parsed.dominanceStats || parsed.dominanceStats.length === 0) parsed.dominanceStats = INITIAL_DATA.dominanceStats;
+  if (!parsed.timelineMilestones || parsed.timelineMilestones.length === 0) parsed.timelineMilestones = INITIAL_DATA.timelineMilestones;
+  if (!parsed.mediaLibrary) parsed.mediaLibrary = INITIAL_DATA.mediaLibrary;
+  if (!parsed.recruitmentApplications) parsed.recruitmentApplications = INITIAL_DATA.recruitmentApplications;
   if (!parsed.settings.liveStatus) parsed.settings.liveStatus = INITIAL_DATA.settings.liveStatus;
-  if (!parsed.settings.adminPin) parsed.settings.adminPin = 'loxxy@2580';
+  if (!parsed.settings.adminPin || parsed.settings.adminPin === 'loxxy2026') parsed.settings.adminPin = 'loxxy@2580';
+  if (!parsed.settings.supabaseConfig) parsed.settings.supabaseConfig = INITIAL_DATA.settings.supabaseConfig;
   if (!parsed.settings.navigation) parsed.settings.navigation = INITIAL_DATA.settings.navigation;
   if (!parsed.settings.sections) parsed.settings.sections = INITIAL_DATA.settings.sections;
   if (parsed.settings.navigation && parsed.settings.navigation.clips === undefined) parsed.settings.navigation.clips = true;
   if (parsed.settings.sections && parsed.settings.sections.clips === undefined) parsed.settings.sections.clips = true;
 
-  parsed.players.forEach((p) => {
-    if (!p.powerIndex) {
-      p.powerIndex = calculatePowerIndex(p);
-    }
-  });
+  if (parsed.players && Array.isArray(parsed.players)) {
+    parsed.players.forEach((p) => {
+      if (!p.powerIndex) {
+        p.powerIndex = calculatePowerIndex(p);
+      }
+    });
+  }
 }
 
 export function getDatabase(): LoxxyDatabase {

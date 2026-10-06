@@ -367,6 +367,15 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
 
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
+              onClick={handleSaveCredentials}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-mono text-xs uppercase font-bold tracking-wider shadow-glow-sm transition-all"
+            >
+              <Save className="w-4 h-4" />
+              <span>{saving ? 'Saving...' : 'Save Keys'}</span>
+            </button>
+
+            <button
               onClick={handleTestConnection}
               disabled={testingConnection || !url}
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-dark-850 hover:bg-dark-800 text-xs font-mono font-bold uppercase text-slate-200 border border-slate-700 transition-all"
@@ -509,11 +518,21 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
 
         {/* Section 1: Supabase Credentials */}
         <div className="p-6 sm:p-8 rounded-3xl bg-dark-900 border border-slate-800 space-y-6">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-800">
-            <Server className="w-5 h-5 text-cyan-400" />
-            <h4 className="font-display font-bold text-white text-base">
-              Supabase Project API Credentials
-            </h4>
+          <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <Server className="w-5 h-5 text-cyan-400" />
+              <h4 className="font-display font-bold text-white text-base">
+                Supabase Project API Credentials
+              </h4>
+            </div>
+            <button
+              type="submit"
+              disabled={saving}
+              className="px-4 py-2 rounded-xl bg-gradient-to-r from-brand-600 to-cyan-500 hover:from-brand-500 hover:to-cyan-400 text-white font-mono text-xs uppercase font-bold tracking-wider flex items-center gap-1.5 shadow-glow-sm transition-all"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{saving ? 'Saving...' : 'Save Keys'}</span>
+            </button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

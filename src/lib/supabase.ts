@@ -131,7 +131,7 @@ export async function pullAllFromSupabase(): Promise<LoxxyDatabase | null> {
         .limit(1);
 
       if (!snapshotErr && snapshotRows && snapshotRows.length > 0 && snapshotRows[0].data) {
-        resultDb = snapshotRows[0].data as LoxxyDatabase;
+        resultDb = { ...(snapshotRows[0].data as LoxxyDatabase) };
       }
     } catch (_) {}
 
@@ -308,6 +308,19 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     }
   };
 
+  // Helper delete orphans
+  const syncDeletions = async (table: string, activeIds: string[]) => {
+    try {
+      const { data: existing } = await supabase.from(table).select('id');
+      if (existing && existing.length > 0) {
+        const toDelete = existing.map((r: any) => r.id).filter((id: string) => !activeIds.includes(id));
+        if (toDelete.length > 0) {
+          await supabase.from(table).delete().in('id', toDelete);
+        }
+      }
+    } catch (_) {}
+  };
+
   // 1. Snapshot store in loxxy_settings as backup (id='loxxy_full_db')
   try {
     const { error: fullDbErr } = await supabase
@@ -446,6 +459,14 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
       }))
     );
   }
+
+  // Sync deletions across tables
+  if (db.players) await syncDeletions('loxxy_players', db.players.map((p) => p.id));
+  if (db.roles) await syncDeletions('loxxy_roles', db.roles.map((r) => r.id));
+  if (db.clips) await syncDeletions('loxxy_clips', db.clips.map((c) => c.id));
+  if (db.tiers) await syncDeletions('loxxy_tiers', db.tiers.map((t) => t.id));
+  if (db.matches) await syncDeletions('loxxy_matches', db.matches.map((m) => m.id));
+  if (db.achievements) await syncDeletions('loxxy_achievements', db.achievements.map((a) => a.id));
 
   return {
     success: errors.length === 0,

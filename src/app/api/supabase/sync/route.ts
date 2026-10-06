@@ -1,10 +1,13 @@
 import { NextResponse } from 'next/server';
-import { getDatabase } from '@/lib/db';
+import { getDatabaseAsync } from '@/lib/db';
 import { pushAllToSupabase } from '@/lib/supabase';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function POST() {
   try {
-    const db = getDatabase();
+    const db = await getDatabaseAsync();
     const result = await pushAllToSupabase(db);
     return NextResponse.json({ success: result.success, ...result });
   } catch (error: any) {

@@ -29,11 +29,11 @@ const TMP_DB_PATH = path.join(os.tmpdir(), 'loxxy_db.json');
 
 const DEFAULT_CONFIG: AppConfig = {
   supabase: {
-    url: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+    url: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://hujpvtdpcugielghzwgj.supabase.co',
+    anonKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODQxNTksImV4cCI6MjEwNjg2MDE1OX0.sChHIxY2rSJrI6lTmwMYks59T_zB8vSs0iBpjHz5yvU',
+    serviceRoleKey: process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh1anB2dGRwY3VnaWVsZ2h6d2dqIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc5MTI4NDE1OSwiZXhwIjoyMTA2ODYwMTU5fQ.sqTKvu6pJepa-SSBgI8OtoqiZ6YUd0V6pUgcLljdJ04',
     databaseUrl: process.env.DATABASE_URL || '',
-    enabled: false,
+    enabled: true,
   },
   integrations: {
     discordWebhookUrl: process.env.DISCORD_WEBHOOK_URL || '',
@@ -103,9 +103,9 @@ export function getAppConfig(): AppConfig {
 }
 
 function mergeWithEnv(base: AppConfig): AppConfig {
-  const url = base.supabase?.url || process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-  const anonKey = base.supabase?.anonKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-  const serviceRoleKey = base.supabase?.serviceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+  const url = base.supabase?.url || process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_CONFIG.supabase.url;
+  const anonKey = base.supabase?.anonKey || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_CONFIG.supabase.anonKey;
+  const serviceRoleKey = base.supabase?.serviceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY || DEFAULT_CONFIG.supabase.serviceRoleKey;
   const databaseUrl = base.supabase?.databaseUrl || process.env.DATABASE_URL || '';
   const hasKeys = !!(url && (anonKey || serviceRoleKey));
 
@@ -159,6 +159,14 @@ export function saveAppConfig(partial: Partial<AppConfig>): AppConfig {
 
   // Save into memory cache
   globalRef.__loxxy_config = updated;
+
+  const globalDb = (globalThis as any).__loxxy_db;
+  if (globalDb && globalDb.settings) {
+    globalDb.settings.supabaseConfig = updated.supabase;
+    if (updated.security?.adminPin) {
+      globalDb.settings.adminPin = updated.security.adminPin;
+    }
+  }
 
   // 1. Save to tmp storage
   try {
