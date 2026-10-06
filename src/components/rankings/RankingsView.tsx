@@ -113,7 +113,7 @@ export default function RankingsView({ players }: RankingsViewProps) {
               </span>
             </div>
             <Link
-              href={`/roster/${top3[1].id}`}
+              href={`/roster/${encodeURIComponent(top3[1].ign)}`}
               className="mt-4 text-xs font-mono uppercase text-cyan-400 hover:underline flex items-center gap-1"
             >
               <span>Profile</span> <ChevronRight className="w-3 h-3" />
@@ -148,7 +148,7 @@ export default function RankingsView({ players }: RankingsViewProps) {
               </span>
             </div>
             <Link
-              href={`/roster/${top3[0].id}`}
+              href={`/roster/${encodeURIComponent(top3[0].ign)}`}
               className="mt-4 px-4 py-1.5 rounded-xl bg-amber-500 text-dark-950 font-mono text-xs uppercase font-bold flex items-center gap-1 hover:bg-amber-400"
             >
               <span>View Dossier</span> <ChevronRight className="w-3.5 h-3.5" />
@@ -182,7 +182,7 @@ export default function RankingsView({ players }: RankingsViewProps) {
               </span>
             </div>
             <Link
-              href={`/roster/${top3[2].id}`}
+              href={`/roster/${encodeURIComponent(top3[2].ign)}`}
               className="mt-4 text-xs font-mono uppercase text-cyan-400 hover:underline flex items-center gap-1"
             >
               <span>Profile</span> <ChevronRight className="w-3 h-3" />
@@ -264,7 +264,7 @@ export default function RankingsView({ players }: RankingsViewProps) {
                     </td>
                     <td className="py-4 text-right">
                       <Link
-                        href={`/roster/${p.id}`}
+                        href={`/roster/${encodeURIComponent(p.ign)}`}
                         className="p-2 rounded-lg bg-dark-850 hover:bg-brand-600 text-slate-300 hover:text-white inline-flex items-center gap-1 transition-colors"
                       >
                         <span>Dossier</span>

@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getPlayersAsync, createPlayerAsync, updatePlayerAsync, deletePlayerAsync } from '@/lib/db';
 import { Player } from '@/lib/types';
 
@@ -16,8 +17,9 @@ export async function POST(req: Request) {
     if (!body.name || !body.ign) {
       return NextResponse.json({ success: false, error: 'Name and IGN are required' }, { status: 400 });
     }
+    const cleanSlug = body.ign.toLowerCase().replace(/[^a-z0-9_-]/g, '');
     const newPlayer: Player = {
-      id: body.id || `player-${Date.now()}`,
+      id: body.id || (cleanSlug ? `player-${cleanSlug}` : `player-${Date.now()}`),
       name: body.name,
       ign: body.ign,
       role: body.role || 'Member',
@@ -27,13 +29,16 @@ export async function POST(req: Request) {
       status: body.status || 'Active',
       featured: !!body.featured,
       region: body.region || 'Global',
-      mainGamemode: body.mainGamemode || 'Sword PvP',
+      mainGamemode: body.mainGamemode || 'Mace',
       bio: body.bio || '',
       pvpTiers: body.pvpTiers || {},
       skills: body.skills || { 'PvP': 85, 'Building': 70, 'Redstone': 60, 'Clutching': 80, 'Game Sense': 80 },
       socials: body.socials || {}
     };
     const created = await createPlayerAsync(newPlayer);
+    try {
+      revalidatePath('/', 'layout');
+    } catch (_) {}
     return NextResponse.json({ success: true, player: created });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -50,6 +55,9 @@ export async function PUT(req: Request) {
     if (!updated) {
       return NextResponse.json({ success: false, error: 'Player not found' }, { status: 404 });
     }
+    try {
+      revalidatePath('/', 'layout');
+    } catch (_) {}
     return NextResponse.json({ success: true, player: updated });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -64,6 +72,9 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ success: false, error: 'Player ID required' }, { status: 400 });
     }
     const deleted = await deletePlayerAsync(id);
+    try {
+      revalidatePath('/', 'layout');
+    } catch (_) {}
     return NextResponse.json({ success: deleted });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

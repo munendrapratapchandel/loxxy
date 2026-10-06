@@ -333,7 +333,7 @@ export default function PlayersManager({
               {/* Bottom Actions */}
               <div className="pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
                 <a
-                  href={`/roster/${player.id}`}
+                  href={`/roster/${encodeURIComponent(player.ign)}`}
                   target="_blank"
                   className="p-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-slate-400 hover:text-cyan-300 text-xs flex items-center gap-1 font-mono"
                   title="View Public Profile"

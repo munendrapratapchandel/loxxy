@@ -309,7 +309,7 @@ export default function RosterView({ players, gamemodes, tiers }: RosterViewProp
 
                   {/* View Full Profile CTA */}
                   <Link
-                    href={`/roster/${player.id}`}
+                    href={`/roster/${encodeURIComponent(player.ign)}`}
                     className="mt-5 w-full inline-flex items-center justify-center gap-2 py-2.5 rounded-xl bg-dark-800 hover:bg-brand-600 text-xs uppercase tracking-wider font-bold text-slate-200 hover:text-white border border-slate-700/80 hover:border-transparent transition-all shadow-sm"
                   >
                     <span>View Athlete Dossier</span>

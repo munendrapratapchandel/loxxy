@@ -858,26 +858,29 @@ export function getDatabase(): LoxxyDatabase {
   return ensureDbFile();
 }
 
-export async function getDatabaseAsync(): Promise<LoxxyDatabase> {
+export async function getDatabaseAsync(forceRefresh: boolean = false): Promise<LoxxyDatabase> {
   const now = Date.now();
-  // If Supabase is connected, pull from cloud (cached for 2.5s for peak response time)
-  if (!globalDbRef.__loxxy_last_sync || now - globalDbRef.__loxxy_last_sync > 2500) {
-    try {
-      const fromSupabase = await pullAllFromSupabase();
-      if (fromSupabase && fromSupabase.players && fromSupabase.settings) {
-        mergeDefaults(fromSupabase);
-        globalDbRef.__loxxy_db = fromSupabase;
-        globalDbRef.__loxxy_last_sync = now;
-
-        // Cache into tmp directory for local persistence
-        try {
-          fs.writeFileSync(TMP_DB_PATH, JSON.stringify(fromSupabase, null, 2), 'utf-8');
-        } catch (_) {}
-
-        return fromSupabase;
-      }
-    } catch (_) {}
+  // If memory cache exists and is fresh (< 30s) and not forced, return immediately (< 5ms response!)
+  if (!forceRefresh && globalDbRef.__loxxy_db && globalDbRef.__loxxy_last_sync && (now - globalDbRef.__loxxy_last_sync < 30000)) {
+    return globalDbRef.__loxxy_db;
   }
+
+  // Pull from Supabase cloud
+  try {
+    const fromSupabase = await pullAllFromSupabase();
+    if (fromSupabase && fromSupabase.players && fromSupabase.settings) {
+      mergeDefaults(fromSupabase);
+      globalDbRef.__loxxy_db = fromSupabase;
+      globalDbRef.__loxxy_last_sync = now;
+
+      // Cache into tmp directory for local persistence
+      try {
+        fs.writeFileSync(TMP_DB_PATH, JSON.stringify(fromSupabase, null, 2), 'utf-8');
+      } catch (_) {}
+
+      return fromSupabase;
+    }
+  } catch (_) {}
 
   return ensureDbFile();
 }
@@ -971,13 +974,39 @@ export async function getPlayersAsync(): Promise<Player[]> {
   return db.players;
 }
 
+export function matchPlayerIdentifier(p: Player, id: string): boolean {
+  if (!id) return false;
+  const decoded = decodeURIComponent(id).trim().toLowerCase();
+  const cleanParam = decoded.replace(/^player[-_]/, '').replace(/[-_]/g, '');
+  const pId = (p.id || '').trim().toLowerCase();
+  const pIgn = (p.ign || '').trim().toLowerCase();
+  const pName = (p.name || '').trim().toLowerCase();
+  const pCleanId = pId.replace(/^player[-_]/, '').replace(/[-_]/g, '');
+  const pCleanIgn = pIgn.replace(/[-_]/g, '');
+  const pCleanName = pName.replace(/[-_]/g, '');
+
+  return (
+    pId === decoded ||
+    pIgn === decoded ||
+    pName === decoded ||
+    pCleanId === cleanParam ||
+    pCleanIgn === cleanParam ||
+    pCleanName === cleanParam ||
+    pId.replace(/^player[-_]/, '') === decoded ||
+    pIgn === decoded.replace(/^player[-_]/, '') ||
+    pName === decoded.replace(/^player[-_]/, '')
+  );
+}
+
 export function getPlayerById(id: string): Player | undefined {
-  return getDatabase().players.find(p => p.id === id || p.ign.toLowerCase() === id.toLowerCase());
+  if (!id) return undefined;
+  return getDatabase().players.find(p => matchPlayerIdentifier(p, id));
 }
 
 export async function getPlayerByIdAsync(id: string): Promise<Player | undefined> {
+  if (!id) return undefined;
   const db = await getDatabaseAsync();
-  return db.players.find(p => p.id === id || p.ign.toLowerCase() === id.toLowerCase());
+  return db.players.find(p => matchPlayerIdentifier(p, id));
 }
 
 export function createPlayer(player: Player): Player {

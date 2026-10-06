@@ -5,8 +5,7 @@ import RecruitmentForm from '@/components/discord/RecruitmentForm';
 import Link from 'next/link';
 import { MessageSquare, Users, Shield, Lock, ExternalLink, Sparkles, CheckCircle2, ChevronRight, Swords } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function DiscordPage() {
   const settings = await getSettingsAsync();

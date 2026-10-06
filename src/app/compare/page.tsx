@@ -107,7 +107,9 @@ export default function ComparePage() {
                     glowColor="#8b5cf6"
                   />
                 </div>
-                <h3 className="text-2xl font-display font-black text-white mt-2">{playerA.ign}</h3>
+                <Link href={`/roster/${encodeURIComponent(playerA.ign)}`} className="hover:text-brand-400 transition-colors">
+                  <h3 className="text-2xl font-display font-black text-white mt-2 hover:underline">{playerA.ign}</h3>
+                </Link>
                 <span className="text-xs font-mono text-cyan-300">{playerA.role} • {playerA.region}</span>
                 <div className="mt-3 text-lg font-mono font-black text-brand-400">
                   {playerA.powerIndex?.toFixed(1) || 95.0} Power Index
@@ -127,7 +129,9 @@ export default function ComparePage() {
                     glowColor="#00f5ff"
                   />
                 </div>
-                <h3 className="text-2xl font-display font-black text-white mt-2">{playerB.ign}</h3>
+                <Link href={`/roster/${encodeURIComponent(playerB.ign)}`} className="hover:text-cyan-400 transition-colors">
+                  <h3 className="text-2xl font-display font-black text-white mt-2 hover:underline">{playerB.ign}</h3>
+                </Link>
                 <span className="text-xs font-mono text-cyan-300">{playerB.role} • {playerB.region}</span>
                 <div className="mt-3 text-lg font-mono font-black text-cyan-400">
                   {playerB.powerIndex?.toFixed(1) || 95.0} Power Index

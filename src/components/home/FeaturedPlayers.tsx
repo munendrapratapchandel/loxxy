@@ -127,7 +127,7 @@ export default function FeaturedPlayers({ players }: FeaturedPlayersProps) {
 
                   {/* View Profile Action */}
                   <Link
-                    href={`/roster/${player.id}`}
+                    href={`/roster/${encodeURIComponent(player.ign)}`}
                     className="mt-6 w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-dark-800 hover:bg-gradient-to-r hover:from-brand-600 hover:to-cyan-600 text-xs uppercase tracking-wider font-bold text-slate-200 hover:text-white transition-all duration-300 border border-slate-700/60 hover:border-transparent group-hover:shadow-glow-sm"
                   >
                     <span>View Profile</span>

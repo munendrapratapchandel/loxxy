@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDatabaseAsync, saveDatabaseAsync } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
@@ -29,6 +30,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, error: 'No data provided' }, { status: 400 });
     }
     const saved = await saveDatabaseAsync(body);
+
+    // Purge cached pages across all layouts so updates are instant globally
+    try {
+      revalidatePath('/', 'layout');
+    } catch (_) {}
+
     return NextResponse.json(
       { success: saved },
       {

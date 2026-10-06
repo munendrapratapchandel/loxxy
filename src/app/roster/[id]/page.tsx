@@ -25,8 +25,7 @@ import {
 } from 'lucide-react';
 import { YouTubeIcon, TwitterXIcon, TwitchIcon, DiscordIcon } from '@/components/common/SocialIcons';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; // live dynamic render
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 interface PlayerProfilePageProps {
   params: {

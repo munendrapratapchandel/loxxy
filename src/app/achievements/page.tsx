@@ -4,8 +4,7 @@ import Footer from '@/components/layout/Footer';
 import AchievementsInteractiveView from '@/components/achievements/AchievementsInteractiveView';
 import { Trophy } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function AchievementsPage() {
   const achievements = await getAchievementsAsync();

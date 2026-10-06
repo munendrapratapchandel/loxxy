@@ -4,8 +4,7 @@ import Footer from '@/components/layout/Footer';
 import RosterView from '@/components/roster/RosterView';
 import { Users, Shield, Sparkles } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; // always fresh data
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function RosterPage() {
   const players = await getPlayersAsync();

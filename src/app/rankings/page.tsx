@@ -3,8 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RankingsView from '@/components/rankings/RankingsView';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function RankingsPage() {
   const players = await getPlayersAsync();

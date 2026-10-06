@@ -114,153 +114,144 @@ export async function testSupabaseConnection(customUrl?: string, customKey?: str
 
 /**
  * Pulls all database records from Supabase tables and reconstructs the complete LoxxyDatabase.
+ * Includes a strict timeout guard to prevent public pages from hanging on network stalls.
  */
-export async function pullAllFromSupabase(): Promise<LoxxyDatabase | null> {
+export async function pullAllFromSupabase(timeoutMs: number = 2500): Promise<LoxxyDatabase | null> {
   const supabase = getSupabase();
   if (!supabase) return null;
 
-  try {
-    let resultDb: Partial<LoxxyDatabase> = {};
-
-    // 1. Try pulling full database snapshot from loxxy_settings
+  const pullTask = async (): Promise<LoxxyDatabase | null> => {
     try {
-      const { data: snapshotRows, error: snapshotErr } = await supabase
-        .from('loxxy_settings')
-        .select('*')
-        .eq('id', 'loxxy_full_db')
-        .limit(1);
+      // 1. Try pulling full database snapshot from loxxy_settings (single roundtrip ~100ms)
+      try {
+        const { data: snapshotRows, error: snapshotErr } = await supabase
+          .from('loxxy_settings')
+          .select('*')
+          .eq('id', 'loxxy_full_db')
+          .limit(1);
 
-      if (!snapshotErr && snapshotRows && snapshotRows.length > 0 && snapshotRows[0].data) {
-        resultDb = { ...(snapshotRows[0].data as LoxxyDatabase) };
-      }
-    } catch (_) {}
+        if (!snapshotErr && snapshotRows && snapshotRows.length > 0 && snapshotRows[0].data) {
+          const snap = snapshotRows[0].data as LoxxyDatabase;
+          if (snap.players && snap.players.length > 0 && snap.settings) {
+            return snap;
+          }
+        }
+      } catch (_) {}
 
-    // 2. Overlay individual site settings if exists
-    try {
-      const { data: settingsRows } = await supabase
-        .from('loxxy_settings')
-        .select('*')
-        .eq('id', 'loxxy_global')
-        .limit(1);
+    // 2. Fallback: Pull from individual tables in PARALLEL if snapshot wasn't available
+    const [
+      settingsRes,
+      playersRes,
+      rolesRes,
+      clipsRes,
+      tiersRes,
+      matchesRes,
+      achievementsRes,
+    ] = await Promise.all([
+      supabase.from('loxxy_settings').select('*').eq('id', 'loxxy_global').limit(1),
+      supabase.from('loxxy_players').select('*'),
+      supabase.from('loxxy_roles').select('*'),
+      supabase.from('loxxy_clips').select('*'),
+      supabase.from('loxxy_tiers').select('*'),
+      supabase.from('loxxy_matches').select('*'),
+      supabase.from('loxxy_achievements').select('*'),
+    ]);
 
-      if (settingsRows && settingsRows.length > 0 && settingsRows[0].data) {
-        resultDb.settings = { ...(resultDb.settings || {}), ...settingsRows[0].data };
-      }
-    } catch (_) {}
+    const resultDb: Partial<LoxxyDatabase> = {};
 
-    // 3. Overlay players from loxxy_players if table has rows
-    try {
-      const { data: playerRows } = await supabase.from('loxxy_players').select('*');
-      if (playerRows && playerRows.length > 0) {
-        resultDb.players = playerRows.map((r: any): Player => ({
-          id: r.id,
-          ign: r.ign,
-          name: r.name,
-          role: r.role || 'Member',
-          skinUrl: r.skin_url || '/skins/steve.png',
-          avatarUrl: r.avatar_url || `https://mc-heads.net/avatar/${r.ign}/100`,
-          joinDate: r.join_date || '',
-          status: r.status || 'Active',
-          featured: !!r.featured,
-          region: r.region || 'Global',
-          mainGamemode: r.main_gamemode || 'Sword PvP',
-          bio: r.bio || '',
-          powerIndex: Number(r.power_index) || 0,
-          pvpTiers: r.pvp_tiers || {},
-          skills: r.skills || {},
-          socials: r.socials || {},
-        }));
-      }
-    } catch (_) {}
+    if (settingsRes.data && settingsRes.data.length > 0 && settingsRes.data[0].data) {
+      resultDb.settings = settingsRes.data[0].data;
+    }
 
-    // 4. Overlay roles from loxxy_roles if table has rows
-    try {
-      const { data: roleRows } = await supabase.from('loxxy_roles').select('*');
-      if (roleRows && roleRows.length > 0) {
-        resultDb.roles = roleRows.map((r: any): TeamRole => ({
-          id: r.id,
-          name: r.name,
-          color: r.color || '#00f5ff',
-          badgeStyle: r.badge_style || '',
-          description: r.description || '',
-          isDefault: !!r.is_default,
-        }));
-      }
-    } catch (_) {}
+    if (playersRes.data && playersRes.data.length > 0) {
+      resultDb.players = playersRes.data.map((r: any): Player => ({
+        id: r.id,
+        ign: r.ign,
+        name: r.name,
+        role: r.role || 'Member',
+        skinUrl: r.skin_url || '/skins/steve.png',
+        avatarUrl: r.avatar_url || `https://mc-heads.net/avatar/${r.ign}/100`,
+        joinDate: r.join_date || '',
+        status: r.status || 'Active',
+        featured: !!r.featured,
+        region: r.region || 'Global',
+        mainGamemode: r.main_gamemode || 'Mace',
+        bio: r.bio || '',
+        powerIndex: Number(r.power_index) || 0,
+        pvpTiers: r.pvp_tiers || {},
+        skills: r.skills || {},
+        socials: r.socials || {},
+      }));
+    }
 
-    // 5. Overlay clips from loxxy_clips if table has rows
-    try {
-      const { data: clipRows } = await supabase.from('loxxy_clips').select('*');
-      if (clipRows && clipRows.length > 0) {
-        resultDb.clips = clipRows.map((c: any): ClipItem => ({
-          id: c.id,
-          title: c.title,
-          category: c.category || 'Tournament Clutch',
-          mediaType: c.media_type || 'video',
-          url: c.url,
-          thumbnailUrl: c.thumbnail_url || '',
-          authorOrPlayer: c.author_or_player || '',
-          gamemode: c.gamemode || '',
-          date: c.date || '',
-          description: c.description || '',
-          featured: !!c.featured,
-        }));
-      }
-    } catch (_) {}
+    if (rolesRes.data && rolesRes.data.length > 0) {
+      resultDb.roles = rolesRes.data.map((r: any): TeamRole => ({
+        id: r.id,
+        name: r.name,
+        color: r.color || '#00f5ff',
+        badgeStyle: r.badge_style || '',
+        description: r.description || '',
+        isDefault: !!r.is_default,
+      }));
+    }
 
-    // 6. Overlay tiers from loxxy_tiers if table has rows
-    try {
-      const { data: tierRows } = await supabase.from('loxxy_tiers').select('*');
-      if (tierRows && tierRows.length > 0) {
-        resultDb.tiers = tierRows.map((t: any): TierDefinition => ({
-          id: t.id,
-          name: t.name,
-          badgeTitle: t.badge_title,
-          type: t.type,
-          level: t.level,
-          color: t.color,
-          glowColor: t.glow_color,
-          badgeGradient: t.badge_gradient,
-          description: t.description,
-        }));
-      }
-    } catch (_) {}
+    if (clipsRes.data && clipsRes.data.length > 0) {
+      resultDb.clips = clipsRes.data.map((c: any): ClipItem => ({
+        id: c.id,
+        title: c.title,
+        category: c.category || 'Tournament Clutch',
+        mediaType: c.media_type || 'video',
+        url: c.url,
+        thumbnailUrl: c.thumbnail_url || '',
+        authorOrPlayer: c.author_or_player || '',
+        gamemode: c.gamemode || '',
+        date: c.date || '',
+        description: c.description || '',
+        featured: !!c.featured,
+      }));
+    }
 
-    // 7. Overlay matches from loxxy_matches if table has rows
-    try {
-      const { data: matchRows } = await supabase.from('loxxy_matches').select('*');
-      if (matchRows && matchRows.length > 0) {
-        resultDb.matches = matchRows.map((m: any): MatchItem => ({
-          id: m.id,
-          opponent: m.opponent,
-          opponentTag: m.opponent_tag || '',
-          date: m.date,
-          tournament: m.tournament,
-          gamemode: m.gamemode,
-          status: m.status,
-          result: m.result || null,
-          score: m.score || '',
-          vodUrl: m.vod_url || '',
-        }));
-      }
-    } catch (_) {}
+    if (tiersRes.data && tiersRes.data.length > 0) {
+      resultDb.tiers = tiersRes.data.map((t: any): TierDefinition => ({
+        id: t.id,
+        name: t.name,
+        badgeTitle: t.badge_title,
+        type: t.type,
+        level: t.level,
+        color: t.color,
+        glowColor: t.glow_color,
+        badgeGradient: t.badge_gradient,
+        description: t.description,
+      }));
+    }
 
-    // 8. Overlay achievements from loxxy_achievements if table has rows
-    try {
-      const { data: achRows } = await supabase.from('loxxy_achievements').select('*');
-      if (achRows && achRows.length > 0) {
-        resultDb.achievements = achRows.map((a: any): Achievement => ({
-          id: a.id,
-          title: a.title,
-          description: a.description,
-          date: a.date,
-          category: a.category,
-          result: a.result,
-          imageUrl: a.image_url,
-          linkedPlayers: a.linked_players || [],
-        }));
-      }
-    } catch (_) {}
+    if (matchesRes.data && matchesRes.data.length > 0) {
+      resultDb.matches = matchesRes.data.map((m: any): MatchItem => ({
+        id: m.id,
+        opponent: m.opponent,
+        opponentTag: m.opponent_tag || '',
+        date: m.date,
+        tournament: m.tournament,
+        gamemode: m.gamemode,
+        status: m.status,
+        result: m.result || null,
+        score: m.score || '',
+        vodUrl: m.vod_url || '',
+      }));
+    }
+
+    if (achievementsRes.data && achievementsRes.data.length > 0) {
+      resultDb.achievements = achievementsRes.data.map((a: any): Achievement => ({
+        id: a.id,
+        title: a.title,
+        description: a.description,
+        date: a.date,
+        category: a.category,
+        result: a.result,
+        imageUrl: a.image_url,
+        linkedPlayers: a.linked_players || [],
+      }));
+    }
 
     if (resultDb.settings && resultDb.players && resultDb.players.length > 0) {
       return resultDb as LoxxyDatabase;
@@ -271,6 +262,13 @@ export async function pullAllFromSupabase(): Promise<LoxxyDatabase | null> {
     console.warn('Could not pull database from Supabase:', err);
     return null;
   }
+};
+
+  const timeoutTask = new Promise<null>((resolve) => {
+    setTimeout(() => resolve(null), timeoutMs);
+  });
+
+  return Promise.race([pullTask(), timeoutTask]);
 }
 
 /**

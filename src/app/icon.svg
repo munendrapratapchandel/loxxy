@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a051d" />
+      <stop offset="50%" stop-color="#120c2e" />
+      <stop offset="100%" stop-color="#05030e" />
+    </linearGradient>
+    <linearGradient id="neonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f5ff" />
+      <stop offset="50%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#d946ef" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#00f5ff" />
+      <stop offset="100%" stop-color="#3b82f6" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Crest Background -->
+  <rect width="512" height="512" rx="120" fill="url(#bgGrad)" />
+  <rect width="512" height="512" rx="120" stroke="url(#neonGrad)" stroke-width="12" stroke-opacity="0.6" fill="none" />
+
+  <!-- Outer Glow Aura -->
+  <path d="M150 110 H226 V324 H362 V390 H150 Z" fill="url(#neonGrad)" opacity="0.4" filter="url(#glow)" />
+
+  <!-- Iconic Futuristic Angular Loxxy "L" Emblem -->
+  <path d="M150 110 H226 V324 H362 V390 H150 Z" fill="url(#neonGrad)" />
+
+  <!-- Sharp Diamond / Crystal Shard Accent -->
+  <polygon points="256,120 310,210 256,300 202,210" fill="url(#accentGrad)" opacity="0.9" />
+  <polygon points="256,140 295,210 256,280 217,210" fill="#ffffff" opacity="0.8" />
+
+  <!-- Esports Corner Slash Accent -->
+  <polygon points="370,120 400,120 340,220 310,220" fill="#00f5ff" opacity="0.85" />
+</svg>

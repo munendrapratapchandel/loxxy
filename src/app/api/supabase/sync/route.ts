@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { getDatabaseAsync } from '@/lib/db';
 import { pushAllToSupabase } from '@/lib/supabase';
 
@@ -9,6 +10,9 @@ export async function POST() {
   try {
     const db = await getDatabaseAsync();
     const result = await pushAllToSupabase(db);
+    try {
+      revalidatePath('/', 'layout');
+    } catch (_) {}
     return NextResponse.json({ success: result.success, ...result });
   } catch (error: any) {
     return NextResponse.json({

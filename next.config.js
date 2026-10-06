@@ -17,6 +17,18 @@ const nextConfig = {
       { protocol: 'https', hostname: 'i.imgur.com' }
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: '/player/:id',
+        destination: '/roster/:id',
+      },
+      {
+        source: '/player-:id',
+        destination: '/roster/:id',
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

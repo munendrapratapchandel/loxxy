@@ -190,7 +190,7 @@ export default function PlayerPowerCard({
 
         {/* Action: View Profile */}
         <Link
-          href={`/roster/${player.id}`}
+          href={`/roster/${encodeURIComponent(player.ign)}`}
           className="w-full inline-flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-brand-600 to-cyan-600 hover:from-brand-500 hover:to-cyan-500 text-white font-mono text-xs uppercase font-bold tracking-wider shadow-md hover:shadow-glow-cyan transition-all"
         >
           <span>View Athlete Dossier</span>

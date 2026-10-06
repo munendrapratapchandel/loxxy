@@ -5,8 +5,7 @@ import DominanceSection from '@/components/home/DominanceSection';
 import TierBadge from '@/components/tier/TierBadge';
 import { BarChart3, Swords, Flame, Target, Zap, Shield, Crown } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function DominancePage() {
   const stats = await getDominanceStatsAsync();

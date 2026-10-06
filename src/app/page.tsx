@@ -10,8 +10,7 @@ import DominanceSection from '@/components/home/DominanceSection';
 import LatestNewsSection from '@/components/home/LatestNewsSection';
 import DiscordCtaSection from '@/components/home/DiscordCtaSection';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0; // always fresh data from admin updates
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function HomePage() {
   const settings = await getSettingsAsync();

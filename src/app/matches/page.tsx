@@ -3,8 +3,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Swords, Calendar, Trophy, CheckCircle, Clock, Video, ArrowUpRight } from 'lucide-react';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 10; // ISR cache with automatic edge revalidation
 
 export default async function MatchesPage() {
   const matches = await getMatchesAsync();
