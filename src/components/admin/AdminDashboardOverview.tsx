@@ -3,7 +3,7 @@
 import React from 'react';
 import { LoxxyDatabase } from '@/lib/types';
 import TierBadge from '@/components/tier/TierBadge';
-import { Users, Trophy, MessageSquare, Shield, ExternalLink, Plus, Sparkles, Activity } from 'lucide-react';
+import { Users, Trophy, MessageSquare, Shield, ExternalLink, Plus, Sparkles, Activity, Medal } from 'lucide-react';
 import Link from 'next/link';
 
 interface AdminDashboardOverviewProps {
@@ -14,11 +14,12 @@ interface AdminDashboardOverviewProps {
 export default function AdminDashboardOverview({ db, setActiveTab }: AdminDashboardOverviewProps) {
   const { players, achievements, dominanceStats, recruitmentApplications, settings } = db;
   const pendingApps = (recruitmentApplications || []).filter((a) => a.status === 'Pending').length;
+  const topPlayer = [...players].sort((a, b) => (b.powerIndex || 0) - (a.powerIndex || 0))[0];
 
   return (
     <div className="space-y-8">
       {/* Quick Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
         <div
           onClick={() => setActiveTab('players')}
           className="p-6 rounded-2xl bg-dark-900 border border-slate-800 hover:border-brand-500/50 cursor-pointer transition-all hover:-translate-y-1 group"
@@ -33,6 +34,24 @@ export default function AdminDashboardOverview({ db, setActiveTab }: AdminDashbo
           </div>
           <div className="text-3xl font-display font-black text-white">{players.length}</div>
           <div className="text-xs font-mono uppercase text-slate-400 mt-1">Roster Athletes</div>
+        </div>
+
+        <div
+          onClick={() => setActiveTab('rankings')}
+          className="p-6 rounded-2xl bg-dark-900 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition-all hover:-translate-y-1 group"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 flex items-center justify-center">
+              <Medal className="w-5 h-5" />
+            </div>
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-500 group-hover:text-cyan-400">
+              CALIBRATE →
+            </span>
+          </div>
+          <div className="text-2xl font-display font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-cyan-400 truncate">
+            {topPlayer?.ign || 'Rankings'}
+          </div>
+          <div className="text-xs font-mono uppercase text-slate-400 mt-1">Leaderboard & PI</div>
         </div>
 
         <div

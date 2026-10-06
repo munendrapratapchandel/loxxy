@@ -18,11 +18,13 @@ import NewsManager from '@/components/admin/NewsManager';
 import RolesManager from '@/components/admin/RolesManager';
 import ClipsManager from '@/components/admin/ClipsManager';
 import SupabaseManager from '@/components/admin/SupabaseManager';
+import RankingsManager from '@/components/admin/RankingsManager';
 import AdminSecurityGate from '@/components/admin/AdminSecurityGate';
 
 import {
   LayoutDashboard,
   Users,
+  Medal,
   Shield,
   Trophy,
   BarChart3,
@@ -82,6 +84,7 @@ export default function AdminPage() {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'players', label: 'Players & 3D Skins', icon: Users, badge: db?.players?.length },
+    { id: 'rankings', label: 'Rankings & Leaderboard', icon: Medal, badge: db?.players?.length },
     { id: 'roles', label: 'Team Roles', icon: Crown, badge: db?.roles?.length },
     { id: 'clips', label: 'Clips & Media Vault', icon: Film, badge: db?.clips?.length },
     { id: 'tiers', label: 'PvP Tiers & Badges', icon: Shield, badge: db?.tiers?.length },
@@ -288,6 +291,15 @@ export default function AdminPage() {
               tiers={db.tiers}
               gamemodes={db.gamemodes}
               roles={db.roles || []}
+              onRefresh={fetchDatabase}
+            />
+          )}
+
+          {activeTab === 'rankings' && (
+            <RankingsManager
+              players={db.players}
+              tiers={db.tiers}
+              db={db}
               onRefresh={fetchDatabase}
             />
           )}
