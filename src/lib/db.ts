@@ -17,6 +17,7 @@ import {
   ClipItem
 } from './types';
 import { calculatePowerIndex } from './powerIndex';
+import { pushAllToSupabase } from './supabase';
 export { calculatePowerIndex };
 
 const DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
@@ -838,6 +839,12 @@ export function saveDatabase(data: LoxxyDatabase): boolean {
     const tempPath = `${DB_PATH}.tmp`;
     fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(tempPath, DB_PATH);
+
+    // Asynchronously synchronize with Supabase cloud if enabled
+    try {
+      pushAllToSupabase(data).catch(() => {});
+    } catch (_) {}
+
     return true;
   } catch (err) {
     console.error('Error saving database file:', err);

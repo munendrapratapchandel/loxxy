@@ -17,6 +17,7 @@ import MatchesManager from '@/components/admin/MatchesManager';
 import NewsManager from '@/components/admin/NewsManager';
 import RolesManager from '@/components/admin/RolesManager';
 import ClipsManager from '@/components/admin/ClipsManager';
+import SupabaseManager from '@/components/admin/SupabaseManager';
 import AdminSecurityGate from '@/components/admin/AdminSecurityGate';
 
 import {
@@ -40,7 +41,8 @@ import {
   Bell,
   Calendar,
   Crown,
-  Film
+  Film,
+  Database
 } from 'lucide-react';
 
 export default function AdminPage() {
@@ -94,6 +96,7 @@ export default function AdminPage() {
     { id: 'branding', label: 'Branding & Theme', icon: Palette },
     { id: 'homepage', label: 'Homepage & Hero', icon: Layout },
     { id: 'media', label: 'Media Library', icon: FolderOpen },
+    { id: 'supabase', label: 'Supabase & Keys', icon: Database, badgeColor: 'bg-emerald-500' },
     { id: 'settings', label: 'Pages ON/OFF', icon: Settings },
   ];
 
@@ -374,6 +377,10 @@ export default function AdminPage() {
               db={db}
               onRefresh={fetchDatabase}
             />
+          )}
+
+          {activeTab === 'supabase' && (
+            <SupabaseManager onRefresh={fetchDatabase} />
           )}
 
           {activeTab === 'settings' && (
