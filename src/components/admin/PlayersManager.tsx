@@ -120,29 +120,42 @@ export default function PlayersManager({
     if (!file || !editingPlayer) return;
 
     setUploadingSkin(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', 'skins');
 
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
-      if (data.success) {
-        setEditingPlayer({
-          ...editingPlayer,
-          skinUrl: data.url,
-        });
-      } else {
-        alert(data.error || 'Upload failed');
+    // 1. Immediately read skin in browser for instant 3D model preview & resilient offline/Vercel support
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const browserDataUrl = event.target?.result as string;
+      if (browserDataUrl) {
+        setEditingPlayer((prev) => (prev ? { ...prev, skinUrl: browserDataUrl } : null));
       }
-    } catch (err: any) {
-      alert('Error uploading skin: ' + err.message);
-    } finally {
+
+      // 2. Upload to server (will store to Supabase Storage or persistent URL)
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('type', 'skins');
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+        const data = await res.json();
+        if (data.success && data.url) {
+          setEditingPlayer((prev) => (prev ? { ...prev, skinUrl: data.url } : null));
+        }
+      } catch (err) {
+        console.warn('Server upload fallback notice (using browser texture):', err);
+      } finally {
+        setUploadingSkin(false);
+      }
+    };
+
+    reader.onerror = () => {
       setUploadingSkin(false);
-    }
+      alert('Could not read the selected skin file.');
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleFetchMojangSkin = () => {
