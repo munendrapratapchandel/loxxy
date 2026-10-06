@@ -1,0 +1,702 @@
+{
+  "settings": {
+    "siteName": "LOXXY",
+    "tagline": "Built to Compete. Designed to Dominate.",
+    "description": "The premier competitive Minecraft esports team. Elite PvP tiers, tournament dominance, and unmatched precision.",
+    "logoText": "LOXXY",
+    "logoUrl": "",
+    "faviconUrl": "",
+    "primaryColor": "#8b5cf6",
+    "secondaryColor": "#00f5ff",
+    "accentColor": "#ec4899",
+    "discordInvite": "https://discord.gg/loxxy-esports",
+    "discordPageEnabled": true,
+    "recruitmentEnabled": true,
+    "maintenanceMode": false,
+    "hero": {
+      "title": "LOXXY",
+      "tagline": "Built to Compete. Designed to Dominate.",
+      "description": "Forged in high-tier PvP arenas. Loxxy is an elite competitive Minecraft organization dominating global tournaments across Sword, Crystal, Axe, and Mace gamemodes.",
+      "cta1Text": "View Roster",
+      "cta1Link": "/roster",
+      "cta2Text": "Our Achievements",
+      "cta2Link": "/achievements",
+      "cta3Text": "Join Discord",
+      "cta3Link": "/discord",
+      "featuredPlayerId": "player-professorx"
+    },
+    "navigation": {
+      "home": true,
+      "roster": true,
+      "achievements": true,
+      "dominance": true,
+      "discord": true,
+      "rankings": true,
+      "compare": true,
+      "matches": true
+    },
+    "sections": {
+      "hero": true,
+      "stats": true,
+      "featuredPlayers": true,
+      "achievements": true,
+      "discordCta": true,
+      "universe": true,
+      "liveStatus": true,
+      "rankingsPreview": true,
+      "latestNews": true,
+      "matches": true
+    },
+    "liveStatus": {
+      "enabled": true,
+      "membersOnline": 24,
+      "playersInGame": 7,
+      "discordOnline": true,
+      "currentActivity": "Scrimming Tier-1 Invitational Brackets"
+    },
+    "adminPin": "loxxy2026"
+  },
+  "tiers": [
+    {
+      "id": "HT1",
+      "name": "High Tier 1",
+      "badgeTitle": "ELITE",
+      "type": "HT",
+      "level": 1,
+      "color": "#f43f5e",
+      "glowColor": "rgba(244, 63, 94, 0.65)",
+      "badgeGradient": "from-rose-500 via-purple-600 to-amber-400",
+      "description": "Peak competitive mastery. Highest possible tier in competitive Minecraft PvP."
+    },
+    {
+      "id": "HT2",
+      "name": "High Tier 2",
+      "badgeTitle": "MASTER",
+      "type": "HT",
+      "level": 2,
+      "color": "#fbbf24",
+      "glowColor": "rgba(251, 191, 36, 0.6)",
+      "badgeGradient": "from-amber-400 via-orange-500 to-yellow-600",
+      "description": "Top-tier tournament veteran with supreme combat efficiency."
+    },
+    {
+      "id": "HT3",
+      "name": "High Tier 3",
+      "badgeTitle": "PRO",
+      "type": "HT",
+      "level": 3,
+      "color": "#a855f7",
+      "glowColor": "rgba(168, 85, 247, 0.55)",
+      "badgeGradient": "from-purple-500 via-indigo-600 to-violet-700",
+      "description": "Established high-tier competitor capable of clutching critical rounds."
+    },
+    {
+      "id": "HT4",
+      "name": "High Tier 4",
+      "badgeTitle": "VETERAN",
+      "type": "HT",
+      "level": 4,
+      "color": "#3b82f6",
+      "glowColor": "rgba(59, 130, 246, 0.5)",
+      "badgeGradient": "from-blue-500 to-cyan-600",
+      "description": "Proven high-tier player with consistent mechanics."
+    },
+    {
+      "id": "HT5",
+      "name": "High Tier 5",
+      "badgeTitle": "SPECIALIST",
+      "type": "HT",
+      "level": 5,
+      "color": "#06b6d4",
+      "glowColor": "rgba(6, 182, 212, 0.45)",
+      "badgeGradient": "from-cyan-500 to-teal-600",
+      "description": "High tier entry division with high potential."
+    },
+    {
+      "id": "LT1",
+      "name": "Low Tier 1",
+      "badgeTitle": "CHALLENGER",
+      "type": "LT",
+      "level": 1,
+      "color": "#10b981",
+      "glowColor": "rgba(16, 185, 129, 0.55)",
+      "badgeGradient": "from-emerald-400 via-teal-500 to-green-600",
+      "description": "Top of the challenger bracket, actively contesting high-tier promotions."
+    },
+    {
+      "id": "LT2",
+      "name": "Low Tier 2",
+      "badgeTitle": "CONTENDER",
+      "type": "LT",
+      "level": 2,
+      "color": "#0284c7",
+      "glowColor": "rgba(2, 132, 199, 0.5)",
+      "badgeGradient": "from-sky-400 to-blue-600",
+      "description": "Formidable competitor with strong fundamentals in specific matchups."
+    },
+    {
+      "id": "LT3",
+      "name": "Low Tier 3",
+      "badgeTitle": "WARRIOR",
+      "type": "LT",
+      "level": 3,
+      "color": "#6366f1",
+      "glowColor": "rgba(99, 102, 241, 0.45)",
+      "badgeGradient": "from-indigo-400 to-blue-500",
+      "description": "Solid competitive foundation with advancing match sense."
+    },
+    {
+      "id": "LT4",
+      "name": "Low Tier 4",
+      "badgeTitle": "CADET",
+      "type": "LT",
+      "level": 4,
+      "color": "#8b5cf6",
+      "glowColor": "rgba(139, 92, 246, 0.4)",
+      "badgeGradient": "from-violet-400 to-purple-600",
+      "description": "Developing combat reflexes in competitive brackets."
+    },
+    {
+      "id": "LT5",
+      "name": "Low Tier 5",
+      "badgeTitle": "ROOKIE",
+      "type": "LT",
+      "level": 5,
+      "color": "#64748b",
+      "glowColor": "rgba(100, 116, 139, 0.4)",
+      "badgeGradient": "from-slate-400 to-zinc-600",
+      "description": "Entry-level competitive tier."
+    }
+  ],
+  "gamemodes": [
+    {
+      "id": "sword",
+      "name": "Sword PvP",
+      "icon": "Swords",
+      "description": "Classic & modern 1.9+ sword mechanics, hit selection, and shield disables."
+    },
+    {
+      "id": "axe",
+      "name": "Axe PvP",
+      "icon": "Axe",
+      "description": "Shield crits, spacing control, and burst axe damage."
+    },
+    {
+      "id": "crystal",
+      "name": "Crystal PvP",
+      "icon": "Sparkles",
+      "description": "Anchor explosions, totem popping, and hyper-speed crystal placements."
+    },
+    {
+      "id": "mace",
+      "name": "Mace PvP",
+      "icon": "Hammer",
+      "description": "Heavy smash attacks, wind charge launches, and aerial precision."
+    },
+    {
+      "id": "uhc",
+      "name": "UHC",
+      "icon": "Heart",
+      "description": "Ultra Hardcore combat, golden apples, rod control, and lava placement."
+    },
+    {
+      "id": "bedwars",
+      "name": "Bedwars",
+      "icon": "Bed",
+      "description": "Fast-paced bridging, bed defense breaking, fireball jumping, and void cluthes."
+    },
+    {
+      "id": "pot",
+      "name": "Netherite Pot",
+      "icon": "FlaskConical",
+      "description": "Debuff cycling, fast potting, speed II strafing, and inventory management."
+    },
+    {
+      "id": "smp",
+      "name": "SMP / Survival",
+      "icon": "Shield",
+      "description": "End-game survival PvP, elytras, firework rocketing, and clan wars."
+    }
+  ],
+  "players": [
+    {
+      "id": "player-professorx",
+      "name": "Veloxx",
+      "ign": "veloxx___",
+      "role": "Founder",
+      "skinUrl": "/skins/user-custom-skin.png",
+      "avatarUrl": "https://mc-heads.net/avatar/veloxx___/100",
+      "joinDate": "2026-03-14",
+      "status": "Captain",
+      "featured": true,
+      "region": "NA East",
+      "mainGamemode": "Sword PvP",
+      "bio": "Founder and tactical leader of Loxxy. Known for surgical sword spacing, instant mace combos, and elite situational game sense across global tournaments.",
+      "pvpTiers": {
+        "Sword": "HT1",
+        "Axe": "HT2",
+        "Crystal": "LT1",
+        "Mace": "HT1",
+        "UHC": "LT2",
+        "Bedwars": "HT2"
+      },
+      "skills": {
+        "PvP": 98,
+        "Building": 82,
+        "Redstone": 74,
+        "Clutching": 91,
+        "Game Sense": 96,
+        "Parkour": 88
+      },
+      "socials": {
+        "discord": "professorx#0001",
+        "youtube": "https://youtube.com/@loxxy-professorx",
+        "twitter": "https://x.com/professorx_mc",
+        "twitch": "https://twitch.tv/professorx_live",
+        "namemc": "https://namemc.com/profile/Professorx"
+      },
+      "powerIndex": 96.1
+    },
+    {
+      "id": "player-valkyrie",
+      "name": "Valkyrie",
+      "ign": "ValkyrieMC",
+      "role": "Co-Owner",
+      "skinUrl": "/skins/valkyrie.png",
+      "avatarUrl": "https://mc-heads.net/avatar/ValkyrieMC/100",
+      "joinDate": "2026-03-20",
+      "status": "Active",
+      "featured": true,
+      "region": "EU Central",
+      "mainGamemode": "Crystal PvP",
+      "bio": "Co-Owner of Loxxy and feared anchor/crystal master. Dominates Netherite Pot and Crystal brackets with lightning-fast reaction speeds.",
+      "pvpTiers": {
+        "Sword": "HT2",
+        "Axe": "HT2",
+        "Crystal": "HT1",
+        "Mace": "HT2",
+        "UHC": "HT2",
+        "Bedwars": "HT1"
+      },
+      "skills": {
+        "PvP": 96,
+        "Building": 89,
+        "Redstone": 68,
+        "Clutching": 97,
+        "Game Sense": 94,
+        "Parkour": 90
+      },
+      "socials": {
+        "discord": "valkyrie#1337",
+        "youtube": "https://youtube.com/@valkyrie-mc",
+        "twitter": "https://x.com/valkyrie_pvp",
+        "twitch": "https://twitch.tv/valkyriemc"
+      },
+      "powerIndex": 96.7
+    },
+    {
+      "id": "player-zephyr",
+      "name": "Zephyr",
+      "ign": "ZephyrBlade",
+      "role": "PvP Player",
+      "skinUrl": "/skins/zephyr.png",
+      "avatarUrl": "https://mc-heads.net/avatar/ZephyrBlade/100",
+      "joinDate": "2026-04-02",
+      "status": "Active",
+      "featured": true,
+      "region": "NA West",
+      "mainGamemode": "Mace PvP",
+      "bio": "Acrobatic mace prodigy. Masters aerial momentum, wind-charge vaults, and one-shot devastating smashes in competitive league matches.",
+      "pvpTiers": {
+        "Sword": "HT1",
+        "Axe": "HT1",
+        "Crystal": "LT1",
+        "Mace": "HT1",
+        "UHC": "HT1",
+        "Bedwars": "HT2"
+      },
+      "skills": {
+        "PvP": 99,
+        "Building": 76,
+        "Redstone": 60,
+        "Clutching": 95,
+        "Game Sense": 98,
+        "Parkour": 97
+      },
+      "socials": {
+        "discord": "zephyr#4040",
+        "youtube": "https://youtube.com/@zephyrblade",
+        "twitter": "https://x.com/zephyr_blade",
+        "twitch": "https://twitch.tv/zephyrblade"
+      },
+      "powerIndex": 97.7
+    },
+    {
+      "id": "player-kage",
+      "name": "Kage",
+      "ign": "KageShadow",
+      "role": "PvP Player",
+      "skinUrl": "/skins/steve.png",
+      "avatarUrl": "https://mc-heads.net/avatar/KageShadow/100",
+      "joinDate": "2026-04-18",
+      "status": "Active",
+      "featured": false,
+      "region": "EU West",
+      "mainGamemode": "Axe PvP",
+      "bio": "Unshakable shield disabling frontline. Controls the center arena and secures eliminations with calculated crits and spacing.",
+      "pvpTiers": {
+        "Sword": "HT2",
+        "Axe": "HT1",
+        "Crystal": "LT2",
+        "Mace": "HT2",
+        "UHC": "HT1",
+        "Bedwars": "LT1"
+      },
+      "skills": {
+        "PvP": 93,
+        "Building": 70,
+        "Redstone": 65,
+        "Clutching": 92,
+        "Game Sense": 91,
+        "Parkour": 84
+      },
+      "socials": {
+        "discord": "kageshadow#7777",
+        "twitter": "https://x.com/kageshadow"
+      },
+      "powerIndex": 91.6
+    },
+    {
+      "id": "player-phantom",
+      "name": "Phantom",
+      "ign": "PhantomRush",
+      "role": "Content Creator",
+      "skinUrl": "/skins/steve.png",
+      "avatarUrl": "https://mc-heads.net/avatar/PhantomRush/100",
+      "joinDate": "2026-05-01",
+      "status": "Active",
+      "featured": false,
+      "region": "NA East",
+      "mainGamemode": "Bedwars",
+      "bio": "Hyperspeed void clutcher and community entertainer with over 200k subscribers documenting Loxxy clan wars and high-tier highlights.",
+      "pvpTiers": {
+        "Sword": "HT2",
+        "Axe": "LT1",
+        "Crystal": "LT2",
+        "Mace": "LT1",
+        "UHC": "LT1",
+        "Bedwars": "HT1"
+      },
+      "skills": {
+        "PvP": 91,
+        "Building": 85,
+        "Redstone": 60,
+        "Clutching": 99,
+        "Game Sense": 90,
+        "Parkour": 98
+      },
+      "socials": {
+        "discord": "phantom#1111",
+        "youtube": "https://youtube.com/@phantomrush",
+        "twitch": "https://twitch.tv/phantomrush"
+      },
+      "powerIndex": 94.4
+    },
+    {
+      "id": "player-aethelgard",
+      "name": "Aethelgard",
+      "ign": "Aethelgard",
+      "role": "Builder",
+      "skinUrl": "/skins/steve.png",
+      "avatarUrl": "https://mc-heads.net/avatar/Aethelgard/100",
+      "joinDate": "2026-05-15",
+      "status": "Active",
+      "featured": false,
+      "region": "EU Central",
+      "mainGamemode": "Building",
+      "bio": "Chief architect responsible for Loxxy private practice arenas, cinematic tournament builds, and redstone combat training circuits.",
+      "pvpTiers": {
+        "Sword": "LT2",
+        "Axe": "LT2",
+        "Crystal": "LT3",
+        "Mace": "LT2",
+        "UHC": "LT2",
+        "Bedwars": "LT1"
+      },
+      "skills": {
+        "PvP": 80,
+        "Building": 99,
+        "Redstone": 93,
+        "Clutching": 86,
+        "Game Sense": 88,
+        "Parkour": 89
+      },
+      "socials": {
+        "discord": "aethelgard#9999",
+        "twitter": "https://x.com/aethelgard_builds"
+      },
+      "powerIndex": 84.3
+    }
+  ],
+  "achievements": [
+    {
+      "id": "ach-1",
+      "title": "Global Minecraft PvP Invitational 2026",
+      "description": "Loxxy took home the undisputed grand prize in a double-elimination 16-team international tournament, sweeping the finals 3-0.",
+      "date": "2026-08-22",
+      "category": "Championship",
+      "result": "1st Place Champions",
+      "imageUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80",
+      "linkedPlayers": [
+        "Professorx",
+        "Zephyr",
+        "Valkyrie"
+      ]
+    },
+    {
+      "id": "ach-2",
+      "title": "Apex Mace Premier Cup Season 2",
+      "description": "Loxxy squad dominated the vertical arena mechanics, registering the highest knockout count and winning all bracket stages.",
+      "date": "2026-07-10",
+      "category": "Tournament",
+      "result": "1st Place Champions",
+      "imageUrl": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80",
+      "linkedPlayers": [
+        "Zephyr",
+        "Professorx"
+      ]
+    },
+    {
+      "id": "ach-3",
+      "title": "Netherite Crystal Masters League",
+      "description": "A grueling 5-game grand finals against European titans sealed by Valkyrie with an anchor detonation clutch in game 5.",
+      "date": "2026-06-04",
+      "category": "Championship",
+      "result": "1st Place Champions",
+      "imageUrl": "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80",
+      "linkedPlayers": [
+        "Valkyrie",
+        "Kage"
+      ]
+    },
+    {
+      "id": "ach-4",
+      "title": "International Bedwars All-Stars Clash",
+      "description": "Record-shattering void clutching and 4v4 bed defense breaches ending in a commanding silver finish against world #1 seeds.",
+      "date": "2026-04-19",
+      "category": "PvP",
+      "result": "2nd Place Runner-Up",
+      "imageUrl": "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80",
+      "linkedPlayers": [
+        "Phantom",
+        "Professorx"
+      ]
+    }
+  ],
+  "dominanceStats": [
+    {
+      "id": "stat-wins",
+      "label": "Tournament Wins",
+      "value": 42,
+      "suffix": "+",
+      "description": "First-place trophies earned across sanctioned competitive Minecraft circuits.",
+      "icon": "Trophy"
+    },
+    {
+      "id": "stat-matches",
+      "label": "Matches Won",
+      "value": 127,
+      "suffix": "",
+      "description": "Competitive scrims and official league game victories.",
+      "icon": "Swords"
+    },
+    {
+      "id": "stat-titles",
+      "label": "Major Titles",
+      "value": 18,
+      "suffix": "",
+      "description": "Tier-1 international championships and grand prize championships.",
+      "icon": "Crown"
+    },
+    {
+      "id": "stat-players",
+      "label": "Top Players",
+      "value": 31,
+      "suffix": "+",
+      "description": "Vetted high-tier and low-tier competitive roster athletes.",
+      "icon": "Users"
+    }
+  ],
+  "recruitmentApplications": [
+    {
+      "id": "app-1791283924846",
+      "ign": "KitsunePvP",
+      "discordTag": "kitsune#9999",
+      "age": "19",
+      "region": "EU Central",
+      "mainGamemode": "Crystal PvP",
+      "pvpTierClaim": "HT1",
+      "experience": "Won 3 regional crystal cups.",
+      "clipsUrl": "https://youtube.com/watch?v=sample",
+      "whyJoin": "Loxxy is the best competitive clan and I want to push HT1 dominance.",
+      "submittedAt": "2026-10-06T10:52:04.846Z",
+      "status": "Pending"
+    },
+    {
+      "id": "app-sample-1",
+      "ign": "NightbladeMC",
+      "discordTag": "nightblade#4421",
+      "age": "18",
+      "region": "NA East",
+      "mainGamemode": "Sword PvP",
+      "pvpTierClaim": "HT2",
+      "experience": "2 years competitive Minecraft, played in CCL Season 3 and regional leagues.",
+      "clipsUrl": "https://youtube.com/watch?v=sample-montage",
+      "whyJoin": "I want to compete with Loxxy at the highest international level and test my skills against HT1 teams.",
+      "submittedAt": "2026-09-28T14:30:00Z",
+      "status": "Reviewed"
+    }
+  ],
+  "mediaLibrary": [
+    {
+      "id": "media-1",
+      "name": "Professorx Skin",
+      "url": "/skins/professorx.png",
+      "category": "skin",
+      "uploadedAt": "2026-03-14"
+    },
+    {
+      "id": "media-2",
+      "name": "Valkyrie Skin",
+      "url": "/skins/valkyrie.png",
+      "category": "skin",
+      "uploadedAt": "2026-03-20"
+    },
+    {
+      "id": "media-3",
+      "name": "Zephyr Skin",
+      "url": "/skins/zephyr.png",
+      "category": "skin",
+      "uploadedAt": "2026-04-02"
+    },
+    {
+      "id": "media-4",
+      "name": "Default Adventurer Skin",
+      "url": "/skins/steve.png",
+      "category": "skin",
+      "uploadedAt": "2026-03-01"
+    }
+  ],
+  "matches": [
+    {
+      "id": "m-1",
+      "opponent": "Team Apex Vanguard",
+      "opponentTag": "APEX",
+      "date": "2026-10-18",
+      "tournament": "Apex Premier League Fall Finals",
+      "gamemode": "Mace 4v4 & Sword PvP",
+      "status": "Upcoming"
+    },
+    {
+      "id": "m-2",
+      "opponent": "Obsidian Syndicate",
+      "opponentTag": "OBS",
+      "date": "2026-10-24",
+      "tournament": "European Crystal Invitational",
+      "gamemode": "Crystal PvP Duel Series",
+      "status": "Upcoming"
+    },
+    {
+      "id": "m-3",
+      "opponent": "Nexus Esports",
+      "opponentTag": "NEXUS",
+      "date": "2026-09-28",
+      "tournament": "Continental Clan War Supercup",
+      "gamemode": "5v5 Mixed Gamemodes",
+      "status": "Completed",
+      "result": "Victory",
+      "score": "5 - 2"
+    },
+    {
+      "id": "m-4",
+      "opponent": "Valkyrie Guard",
+      "opponentTag": "VG",
+      "date": "2026-09-15",
+      "tournament": "Netherite Masters Scrim Series",
+      "gamemode": "Netherite Pot 3v3",
+      "status": "Completed",
+      "result": "Victory",
+      "score": "4 - 1"
+    }
+  ],
+  "news": [
+    {
+      "id": "n-1",
+      "title": "Professorx Unveils Official 2026 Battle Rig",
+      "category": "Roster Update",
+      "date": "2026-10-06",
+      "summary": "Loxxy founder Professorx equips a brand-new custom 3D combat skin with crimson and obsidian weave for upcoming invitational brackets.",
+      "imageUrl": "/skins/user-custom-skin.png"
+    },
+    {
+      "id": "n-2",
+      "title": "Loxxy Claims 1st Place in Global Minecraft Invitational",
+      "category": "Tournament Win",
+      "date": "2026-08-25",
+      "summary": "With an unyielding 3-0 grand finals sweep, Loxxy secures its 42nd tournament trophy in sanctioned high-tier Minecraft competition.",
+      "imageUrl": "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80"
+    },
+    {
+      "id": "n-3",
+      "title": "Fall 2026 Competitive Recruitment Applications Open",
+      "category": "Announcement",
+      "date": "2026-09-20",
+      "summary": "Trial spots for HT1 and HT2 tier applicants in Sword, Crystal, and Mace gamemodes are now accepting tryout submissions.",
+      "imageUrl": "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80"
+    }
+  ],
+  "timelineMilestones": [
+    {
+      "id": "t1",
+      "date": "March 2026",
+      "title": "Loxxy Founded",
+      "description": "Professorx established Loxxy as an elite competitive Minecraft clan.",
+      "category": "Milestone"
+    },
+    {
+      "id": "t2",
+      "date": "April 2026",
+      "title": "First Championship Victory",
+      "description": "Bedwars All-Stars podium placement and regional recognition.",
+      "category": "Tournament"
+    },
+    {
+      "id": "t3",
+      "date": "May 2026",
+      "title": "Tier 1 Division Expansion",
+      "description": "Roster expanded to 30+ verified HT and LT athletes.",
+      "category": "Roster"
+    },
+    {
+      "id": "t4",
+      "date": "June 2026",
+      "title": "Crystal Masters Gold",
+      "description": "Valkyrie and squad claim grand prize in European Crystal cup.",
+      "category": "Tournament"
+    },
+    {
+      "id": "t5",
+      "date": "July 2026",
+      "title": "Apex Mace Cup Triumph",
+      "description": "Swept all 16 bracket rounds in vertical Mace arena.",
+      "category": "Tournament"
+    },
+    {
+      "id": "t6",
+      "date": "August 2026",
+      "title": "Global Invitational Grand Champions",
+      "description": "Defeated international titans 3-0 in world finals.",
+      "category": "Championship"
+    }
+  ]
+}

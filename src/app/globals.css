@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: #8b5cf6;
+  --color-secondary: #00f5ff;
+  --color-accent: #ec4899;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #06070c;
+  color: #f1f5f9;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom cyber scrollbars */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0b0d14;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1f2537;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #7c3aed;
+}
+
+/* Pixel-perfect rendering for Minecraft skin textures */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Custom glow helpers */
+.glow-purple {
+  box-shadow: 0 0 25px -4px rgba(139, 92, 246, 0.45);
+}
+
+.glow-cyan {
+  box-shadow: 0 0 25px -4px rgba(0, 245, 255, 0.4);
+}
+
+.glow-ruby {
+  box-shadow: 0 0 25px -4px rgba(244, 63, 94, 0.4);
+}
