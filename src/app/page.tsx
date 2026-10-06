@@ -1,5 +1,4 @@
-import React from 'react';
-import { getSettings, getPlayers, getDominanceStats, getPlayerById, getNews } from '@/lib/db';
+import { getSettingsAsync, getPlayersAsync, getDominanceStatsAsync, getPlayerByIdAsync, getNewsAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import LiveStatusBar from '@/components/layout/LiveStatusBar';
@@ -11,17 +10,18 @@ import DominanceSection from '@/components/home/DominanceSection';
 import LatestNewsSection from '@/components/home/LatestNewsSection';
 import DiscordCtaSection from '@/components/home/DiscordCtaSection';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // always fresh data from admin updates
 
-export default function HomePage() {
-  const settings = getSettings();
-  const players = getPlayers();
-  const stats = getDominanceStats();
-  const news = getNews();
+export default async function HomePage() {
+  const settings = await getSettingsAsync();
+  const players = await getPlayersAsync();
+  const stats = await getDominanceStatsAsync();
+  const news = await getNewsAsync();
   
   // Featured hero player (e.g. Professorx)
   const heroPlayer =
-    getPlayerById(settings.hero.featuredPlayerId) ||
+    (await getPlayerByIdAsync(settings.hero?.featuredPlayerId)) ||
     players.find(p => p.featured) ||
     players[0];
 

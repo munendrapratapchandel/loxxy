@@ -1,17 +1,17 @@
-import React from 'react';
-import { getAchievements, getSettings, getDominanceStats, getTimelineMilestones } from '@/lib/db';
+import { getAchievementsAsync, getSettingsAsync, getDominanceStatsAsync, getTimelineMilestonesAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import AchievementsInteractiveView from '@/components/achievements/AchievementsInteractiveView';
 import { Trophy } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function AchievementsPage() {
-  const achievements = getAchievements();
-  const settings = getSettings();
-  const stats = getDominanceStats();
-  const milestones = getTimelineMilestones();
+export default async function AchievementsPage() {
+  const achievements = await getAchievementsAsync();
+  const settings = await getSettingsAsync();
+  const stats = await getDominanceStatsAsync();
+  const milestones = await getTimelineMilestonesAsync();
 
   return (
     <div className="min-h-screen bg-dark-950 text-slate-100 flex flex-col">

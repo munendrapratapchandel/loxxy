@@ -1,23 +1,26 @@
 import { NextResponse } from 'next/server';
-import { getDatabase, saveDatabase } from '@/lib/db';
+import { getDatabaseAsync, saveDatabaseAsync } from '@/lib/db';
 import { RecruitmentApplication } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
-  const db = getDatabase();
+  const db = await getDatabaseAsync();
   return NextResponse.json({ success: true, applications: db.recruitmentApplications || [] });
 }
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const db = getDatabase();
+    const db = await getDatabaseAsync();
 
     // Check if updating an existing application status (Admin)
     if (body.action === 'update_status' && body.id && body.status) {
-      const idx = db.recruitmentApplications.findIndex(a => a.id === body.id);
+      const idx = (db.recruitmentApplications || []).findIndex(a => a.id === body.id);
       if (idx !== -1) {
         db.recruitmentApplications[idx].status = body.status;
-        saveDatabase(db);
+        await saveDatabaseAsync(db);
         return NextResponse.json({ success: true, application: db.recruitmentApplications[idx] });
       }
       return NextResponse.json({ success: false, error: 'Application not found' }, { status: 404 });
@@ -47,7 +50,7 @@ export async function POST(req: Request) {
       db.recruitmentApplications = [];
     }
     db.recruitmentApplications.unshift(newApp);
-    saveDatabase(db);
+    await saveDatabaseAsync(db);
 
     return NextResponse.json({ success: true, application: newApp });
   } catch (error: any) {

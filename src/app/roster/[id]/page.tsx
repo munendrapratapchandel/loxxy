@@ -1,7 +1,7 @@
 import React from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPlayerById, getSettings, getPlayers, calculatePowerIndex } from '@/lib/db';
+import { getPlayerByIdAsync, getSettingsAsync, getPlayersAsync, calculatePowerIndex } from '@/lib/db';
 import MinecraftSkinViewer from '@/components/skin/MinecraftSkinViewer';
 import TierBadge from '@/components/tier/TierBadge';
 import Navbar from '@/components/layout/Navbar';
@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { YouTubeIcon, TwitterXIcon, TwitchIcon, DiscordIcon } from '@/components/common/SocialIcons';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // live dynamic render
 
 interface PlayerProfilePageProps {
@@ -54,10 +55,10 @@ function calculateTenure(joinDateStr: string): string {
   }
 }
 
-export default function PlayerProfilePage({ params }: PlayerProfilePageProps) {
-  const player = getPlayerById(params.id);
-  const settings = getSettings();
-  const allPlayers = getPlayers();
+export default async function PlayerProfilePage({ params }: PlayerProfilePageProps) {
+  const player = await getPlayerByIdAsync(params.id);
+  const settings = await getSettingsAsync();
+  const allPlayers = await getPlayersAsync();
 
   if (!player) {
     notFound();

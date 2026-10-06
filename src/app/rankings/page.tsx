@@ -1,14 +1,14 @@
-import React from 'react';
-import { getPlayers, getSettings } from '@/lib/db';
+import { getPlayersAsync, getSettingsAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RankingsView from '@/components/rankings/RankingsView';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function RankingsPage() {
-  const players = getPlayers();
-  const settings = getSettings();
+export default async function RankingsPage() {
+  const players = await getPlayersAsync();
+  const settings = await getSettingsAsync();
 
   return (
     <div className="min-h-screen bg-dark-950 text-slate-100 flex flex-col">

@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getRoles, createRole, updateRole, deleteRole } from '@/lib/db';
+import { getRolesAsync, createRoleAsync, updateRoleAsync, deleteRoleAsync } from '@/lib/db';
 import { TeamRole } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
-  const roles = getRoles();
+  const roles = await getRolesAsync();
   return NextResponse.json({ success: true, roles });
 }
 
@@ -21,7 +24,7 @@ export async function POST(req: Request) {
       description: body.description || '',
       isDefault: false
     };
-    const created = createRole(newRole);
+    const created = await createRoleAsync(newRole);
     return NextResponse.json({ success: true, role: created });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -34,7 +37,7 @@ export async function PUT(req: Request) {
     if (!body.id) {
       return NextResponse.json({ success: false, error: 'Role ID is required' }, { status: 400 });
     }
-    const updated = updateRole(body.id, body);
+    const updated = await updateRoleAsync(body.id, body);
     if (!updated) {
       return NextResponse.json({ success: false, error: 'Role not found' }, { status: 404 });
     }
@@ -51,7 +54,7 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ success: false, error: 'Role ID is required' }, { status: 400 });
     }
-    const deleted = deleteRole(id);
+    const deleted = await deleteRoleAsync(id);
     return NextResponse.json({ success: deleted });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

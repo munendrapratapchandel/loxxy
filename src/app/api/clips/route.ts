@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
-import { getClips, createClip, updateClip, deleteClip, updateSettings, getSettings } from '@/lib/db';
+import {
+  getClipsAsync,
+  createClipAsync,
+  updateClipAsync,
+  deleteClipAsync,
+  updateSettingsAsync,
+  getSettingsAsync
+} from '@/lib/db';
 import { ClipItem } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
-  const clips = getClips();
-  const settings = getSettings();
+  const clips = await getClipsAsync();
+  const settings = await getSettingsAsync();
   return NextResponse.json({
     success: true,
     clips,
@@ -18,8 +28,8 @@ export async function POST(req: Request) {
 
     // Support toggle action if body has toggleStatus
     if (typeof body.enabled === 'boolean') {
-      const current = getSettings();
-      updateSettings({
+      const current = await getSettingsAsync();
+      await updateSettingsAsync({
         navigation: { ...current.navigation, clips: body.enabled },
         sections: { ...current.sections, clips: body.enabled }
       });
@@ -44,7 +54,7 @@ export async function POST(req: Request) {
       featured: !!body.featured
     };
 
-    const created = createClip(newClip);
+    const created = await createClipAsync(newClip);
     return NextResponse.json({ success: true, clip: created });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -57,7 +67,7 @@ export async function PUT(req: Request) {
     if (!body.id) {
       return NextResponse.json({ success: false, error: 'Clip ID is required' }, { status: 400 });
     }
-    const updated = updateClip(body.id, body);
+    const updated = await updateClipAsync(body.id, body);
     if (!updated) {
       return NextResponse.json({ success: false, error: 'Clip not found' }, { status: 404 });
     }
@@ -74,7 +84,7 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ success: false, error: 'Clip ID is required' }, { status: 400 });
     }
-    const deleted = deleteClip(id);
+    const deleted = await deleteClipAsync(id);
     return NextResponse.json({ success: deleted });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

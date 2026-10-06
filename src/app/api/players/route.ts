@@ -1,9 +1,12 @@
 import { NextResponse } from 'next/server';
-import { getPlayers, createPlayer, updatePlayer, deletePlayer } from '@/lib/db';
+import { getPlayersAsync, createPlayerAsync, updatePlayerAsync, deletePlayerAsync } from '@/lib/db';
 import { Player } from '@/lib/types';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
-  const players = getPlayers();
+  const players = await getPlayersAsync();
   return NextResponse.json({ success: true, players });
 }
 
@@ -30,7 +33,7 @@ export async function POST(req: Request) {
       skills: body.skills || { 'PvP': 85, 'Building': 70, 'Redstone': 60, 'Clutching': 80, 'Game Sense': 80 },
       socials: body.socials || {}
     };
-    const created = createPlayer(newPlayer);
+    const created = await createPlayerAsync(newPlayer);
     return NextResponse.json({ success: true, player: created });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });
@@ -43,7 +46,7 @@ export async function PUT(req: Request) {
     if (!body.id) {
       return NextResponse.json({ success: false, error: 'Player ID required' }, { status: 400 });
     }
-    const updated = updatePlayer(body.id, body);
+    const updated = await updatePlayerAsync(body.id, body);
     if (!updated) {
       return NextResponse.json({ success: false, error: 'Player not found' }, { status: 404 });
     }
@@ -60,7 +63,7 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json({ success: false, error: 'Player ID required' }, { status: 400 });
     }
-    const deleted = deletePlayer(id);
+    const deleted = await deletePlayerAsync(id);
     return NextResponse.json({ success: deleted });
   } catch (error: any) {
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

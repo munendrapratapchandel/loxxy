@@ -55,7 +55,10 @@ export default function AdminPage() {
   const fetchDatabase = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/data');
+      const res = await fetch(`/api/data?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
       const data = await res.json();
       if (data.success && data.data) {
         setDb(data.data);

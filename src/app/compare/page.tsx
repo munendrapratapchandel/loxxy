@@ -17,7 +17,7 @@ export default function ComparePage() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetch('/api/data')
+    fetch(`/api/data?t=${Date.now()}`, { cache: 'no-store' })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.data) {

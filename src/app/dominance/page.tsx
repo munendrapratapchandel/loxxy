@@ -1,17 +1,17 @@
-import React from 'react';
-import { getDominanceStats, getSettings, getPlayers } from '@/lib/db';
+import { getDominanceStatsAsync, getSettingsAsync, getPlayersAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import DominanceSection from '@/components/home/DominanceSection';
 import TierBadge from '@/components/tier/TierBadge';
 import { BarChart3, Swords, Flame, Target, Zap, Shield, Crown } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function DominancePage() {
-  const stats = getDominanceStats();
-  const settings = getSettings();
-  const players = getPlayers();
+export default async function DominancePage() {
+  const stats = await getDominanceStatsAsync();
+  const settings = await getSettingsAsync();
+  const players = await getPlayersAsync();
 
   // Calculate tier distribution
   const tierCounts: Record<string, number> = {};

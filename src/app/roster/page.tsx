@@ -1,17 +1,17 @@
-import React from 'react';
-import { getPlayers, getSettings, getGamemodes, getTiers } from '@/lib/db';
+import { getPlayersAsync, getSettingsAsync, getGamemodesAsync, getTiersAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RosterView from '@/components/roster/RosterView';
 import { Users, Shield, Sparkles } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // always fresh data
 
-export default function RosterPage() {
-  const players = getPlayers();
-  const settings = getSettings();
-  const gamemodes = getGamemodes();
-  const tiers = getTiers();
+export default async function RosterPage() {
+  const players = await getPlayersAsync();
+  const settings = await getSettingsAsync();
+  const gamemodes = await getGamemodesAsync();
+  const tiers = await getTiersAsync();
 
   return (
     <div className="min-h-screen bg-dark-950 text-slate-100 flex flex-col">

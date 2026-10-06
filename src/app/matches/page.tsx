@@ -1,14 +1,14 @@
-import React from 'react';
-import { getMatches, getSettings } from '@/lib/db';
+import { getMatchesAsync, getSettingsAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { Swords, Calendar, Trophy, CheckCircle, Clock, Video, ArrowUpRight } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function MatchesPage() {
-  const matches = getMatches();
-  const settings = getSettings();
+export default async function MatchesPage() {
+  const matches = await getMatchesAsync();
+  const settings = await getSettingsAsync();
 
   const upcoming = matches.filter((m) => m.status === 'Upcoming');
   const completed = matches.filter((m) => m.status === 'Completed');

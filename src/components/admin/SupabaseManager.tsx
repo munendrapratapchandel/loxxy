@@ -92,18 +92,55 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
   const fetchConfig = async () => {
     try {
       setLoading(true);
-      const res = await fetch('/api/config');
+      const res = await fetch(`/api/config?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache' },
+      });
       const data = await res.json();
+
+      let effectiveUrl = data?.config?.supabase?.url || '';
+      let effectiveAnonKey = data?.config?.supabase?.anonKey || '';
+      let effectiveServiceRoleKey = data?.config?.supabase?.serviceRoleKey || '';
+      let effectiveDatabaseUrl = data?.config?.supabase?.databaseUrl || '';
+
+      if (typeof window !== 'undefined') {
+        const storedUrl = localStorage.getItem('loxxy_supabase_url') || '';
+        const storedAnonKey = localStorage.getItem('loxxy_supabase_anon_key') || '';
+        const storedServiceKey = localStorage.getItem('loxxy_supabase_service_key') || '';
+        const storedDbUrl = localStorage.getItem('loxxy_supabase_db_url') || '';
+
+        if (!effectiveUrl && storedUrl) effectiveUrl = storedUrl;
+        if (!effectiveAnonKey && storedAnonKey) effectiveAnonKey = storedAnonKey;
+        if (!effectiveServiceRoleKey && storedServiceKey) effectiveServiceRoleKey = storedServiceKey;
+        if (!effectiveDatabaseUrl && storedDbUrl) effectiveDatabaseUrl = storedDbUrl;
+
+        // Auto self-heal server memory if localStorage has keys but server returned empty
+        if ((!data?.config?.supabase?.url && effectiveUrl) || (!data?.config?.supabase?.anonKey && effectiveAnonKey)) {
+          fetch('/api/config', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              supabase: {
+                url: effectiveUrl,
+                anonKey: effectiveAnonKey,
+                serviceRoleKey: effectiveServiceRoleKey,
+                databaseUrl: effectiveDatabaseUrl,
+              },
+            }),
+          }).catch(() => {});
+        }
+      }
+
       if (data.success && data.config) {
         setConfig(data.config);
-        setUrl(data.config.supabase?.url || '');
-        setAnonKey(data.config.supabase?.anonKey || '');
-        setServiceRoleKey(data.config.supabase?.serviceRoleKey || '');
-        setDatabaseUrl(data.config.supabase?.databaseUrl || '');
-        setDiscordWebhook(data.config.integrations?.discordWebhookUrl || '');
-        setYoutubeApiKey(data.config.integrations?.youtubeApiKey || '');
-        setTwitchClientId(data.config.integrations?.twitchClientId || '');
       }
+      setUrl(effectiveUrl);
+      setAnonKey(effectiveAnonKey);
+      setServiceRoleKey(effectiveServiceRoleKey);
+      setDatabaseUrl(effectiveDatabaseUrl);
+      setDiscordWebhook(data?.config?.integrations?.discordWebhookUrl || '');
+      setYoutubeApiKey(data?.config?.integrations?.youtubeApiKey || '');
+      setTwitchClientId(data?.config?.integrations?.twitchClientId || '');
     } catch (e) {
       console.error('Failed to load config:', e);
     } finally {
@@ -113,7 +150,9 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
 
   const fetchSqlSchema = async () => {
     try {
-      const res = await fetch('/api/supabase/schema');
+      const res = await fetch(`/api/supabase/schema?t=${Date.now()}`, {
+        cache: 'no-store',
+      });
       const data = await res.json();
       if (data.success) {
         setSqlSchema(data.sql);
@@ -157,6 +196,14 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
     e.preventDefault();
     setSaving(true);
     setSavedSuccess(false);
+
+    // Save to localStorage immediately so keys are never lost in browser
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('loxxy_supabase_url', url.trim());
+      localStorage.setItem('loxxy_supabase_anon_key', anonKey.trim());
+      localStorage.setItem('loxxy_supabase_service_key', serviceRoleKey.trim());
+      localStorage.setItem('loxxy_supabase_db_url', databaseUrl.trim());
+    }
 
     try {
       const payload: any = {

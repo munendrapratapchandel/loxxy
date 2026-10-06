@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
 import {
   LoxxyDatabase,
   SiteSettings,
@@ -17,10 +18,11 @@ import {
   ClipItem
 } from './types';
 import { calculatePowerIndex } from './powerIndex';
-import { pushAllToSupabase } from './supabase';
+import { pushAllToSupabase, pullAllFromSupabase } from './supabase';
 export { calculatePowerIndex };
 
 const DB_PATH = path.join(process.cwd(), 'src', 'data', 'db.json');
+const TMP_DB_PATH = path.join(os.tmpdir(), 'loxxy_db.json');
 
 const INITIAL_DATA: LoxxyDatabase = {
   settings: {
@@ -759,101 +761,162 @@ const INITIAL_DATA: LoxxyDatabase = {
   ]
 };
 
+// Global in-memory cache to maintain database state across serverless container invocations
+const globalDbRef = globalThis as unknown as {
+  __loxxy_db?: LoxxyDatabase;
+  __loxxy_last_sync?: number;
+};
+
 function ensureDbFile(): LoxxyDatabase {
-  try {
-    if (!fs.existsSync(DB_PATH)) {
-      const dir = path.dirname(DB_PATH);
-      if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(DB_PATH, JSON.stringify(INITIAL_DATA, null, 2), 'utf-8');
-      return INITIAL_DATA;
-    }
-    const content = fs.readFileSync(DB_PATH, 'utf-8');
-    const parsed = JSON.parse(content) as LoxxyDatabase;
-
-    // Backward compatibility merge
-    let modified = false;
-    if (!parsed.roles || parsed.roles.length === 0) { parsed.roles = INITIAL_DATA.roles; modified = true; }
-    if (!parsed.clips) { parsed.clips = INITIAL_DATA.clips; modified = true; }
-    if (!parsed.matches) { parsed.matches = INITIAL_DATA.matches; modified = true; }
-    if (!parsed.news) { parsed.news = INITIAL_DATA.news; modified = true; }
-    if (!parsed.timelineMilestones) { parsed.timelineMilestones = INITIAL_DATA.timelineMilestones; modified = true; }
-    if (!parsed.settings.liveStatus) { parsed.settings.liveStatus = INITIAL_DATA.settings.liveStatus; modified = true; }
-    if (!parsed.settings.adminPin) { parsed.settings.adminPin = 'loxxy@2580'; modified = true; }
-    if (parsed.settings.navigation && parsed.settings.navigation.clips === undefined) {
-      parsed.settings.navigation.clips = true;
-      modified = true;
-    }
-    if (parsed.settings.sections && parsed.settings.sections.clips === undefined) {
-      parsed.settings.sections.clips = true;
-      modified = true;
-    }
-    if (parsed.settings.navigation && parsed.settings.navigation.rankings === undefined) {
-      parsed.settings.navigation.rankings = true;
-      parsed.settings.navigation.compare = true;
-      parsed.settings.navigation.matches = true;
-      modified = true;
-    }
-    if (parsed.settings.sections && parsed.settings.sections.universe === undefined) {
-      parsed.settings.sections.universe = true;
-      parsed.settings.sections.liveStatus = true;
-      parsed.settings.sections.rankingsPreview = true;
-      parsed.settings.sections.latestNews = true;
-      parsed.settings.sections.matches = true;
-      modified = true;
-    }
-
-    // Ensure Professorx has the user's uploaded custom skin!
-    const px = parsed.players.find(p => p.id === 'player-professorx');
-    if (px && px.skinUrl !== '/skins/user-custom-skin.png') {
-      px.skinUrl = '/skins/user-custom-skin.png';
-      modified = true;
-    }
-
-    // Ensure powerIndex calculated for each player
-    parsed.players.forEach(p => {
-      if (!p.powerIndex) {
-        p.powerIndex = calculatePowerIndex(p);
-        modified = true;
-      }
-    });
-
-    if (modified) {
-      saveDatabase(parsed);
-    }
-
-    return parsed;
-  } catch (err) {
-    console.error('Error reading database file:', err);
-    return INITIAL_DATA;
+  if (globalDbRef.__loxxy_db) {
+    return globalDbRef.__loxxy_db;
   }
+
+  // 1. Try reading from tmp directory (most recent write in serverless environment)
+  try {
+    if (fs.existsSync(TMP_DB_PATH)) {
+      const content = fs.readFileSync(TMP_DB_PATH, 'utf-8');
+      const parsed = JSON.parse(content) as LoxxyDatabase;
+      if (parsed && parsed.players && parsed.settings) {
+        mergeDefaults(parsed);
+        globalDbRef.__loxxy_db = parsed;
+        return parsed;
+      }
+    }
+  } catch (_) {}
+
+  // 2. Try reading from repository file (src/data/db.json)
+  try {
+    if (fs.existsSync(DB_PATH)) {
+      const content = fs.readFileSync(DB_PATH, 'utf-8');
+      const parsed = JSON.parse(content) as LoxxyDatabase;
+      if (parsed && parsed.players && parsed.settings) {
+        mergeDefaults(parsed);
+        globalDbRef.__loxxy_db = parsed;
+        return parsed;
+      }
+    }
+  } catch (_) {}
+
+  // 3. Fallback to INITIAL_DATA
+  const fallback = JSON.parse(JSON.stringify(INITIAL_DATA)) as LoxxyDatabase;
+  mergeDefaults(fallback);
+  globalDbRef.__loxxy_db = fallback;
+  return fallback;
+}
+
+function mergeDefaults(parsed: LoxxyDatabase): void {
+  if (!parsed.roles || parsed.roles.length === 0) parsed.roles = INITIAL_DATA.roles;
+  if (!parsed.clips) parsed.clips = INITIAL_DATA.clips;
+  if (!parsed.matches) parsed.matches = INITIAL_DATA.matches;
+  if (!parsed.news) parsed.news = INITIAL_DATA.news;
+  if (!parsed.timelineMilestones) parsed.timelineMilestones = INITIAL_DATA.timelineMilestones;
+  if (!parsed.settings.liveStatus) parsed.settings.liveStatus = INITIAL_DATA.settings.liveStatus;
+  if (!parsed.settings.adminPin) parsed.settings.adminPin = 'loxxy@2580';
+  if (!parsed.settings.navigation) parsed.settings.navigation = INITIAL_DATA.settings.navigation;
+  if (!parsed.settings.sections) parsed.settings.sections = INITIAL_DATA.settings.sections;
+  if (parsed.settings.navigation && parsed.settings.navigation.clips === undefined) parsed.settings.navigation.clips = true;
+  if (parsed.settings.sections && parsed.settings.sections.clips === undefined) parsed.settings.sections.clips = true;
+
+  parsed.players.forEach((p) => {
+    if (!p.powerIndex) {
+      p.powerIndex = calculatePowerIndex(p);
+    }
+  });
 }
 
 export function getDatabase(): LoxxyDatabase {
   return ensureDbFile();
 }
 
+export async function getDatabaseAsync(): Promise<LoxxyDatabase> {
+  const now = Date.now();
+  // If Supabase is connected, pull from cloud (cached for 2.5s for peak response time)
+  if (!globalDbRef.__loxxy_last_sync || now - globalDbRef.__loxxy_last_sync > 2500) {
+    try {
+      const fromSupabase = await pullAllFromSupabase();
+      if (fromSupabase && fromSupabase.players && fromSupabase.settings) {
+        mergeDefaults(fromSupabase);
+        globalDbRef.__loxxy_db = fromSupabase;
+        globalDbRef.__loxxy_last_sync = now;
+
+        // Cache into tmp directory for local persistence
+        try {
+          fs.writeFileSync(TMP_DB_PATH, JSON.stringify(fromSupabase, null, 2), 'utf-8');
+        } catch (_) {}
+
+        return fromSupabase;
+      }
+    } catch (_) {}
+  }
+
+  return ensureDbFile();
+}
+
 export function saveDatabase(data: LoxxyDatabase): boolean {
+  globalDbRef.__loxxy_db = data;
+
+  // 1. Write to tmp file (always writable on Vercel Serverless /tmp)
+  try {
+    fs.writeFileSync(TMP_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (tmpErr) {
+    console.warn('Could not write to tmp database file:', tmpErr);
+  }
+
+  // 2. Try writing to repository path (works in local dev)
   try {
     const dir = path.dirname(DB_PATH);
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
-    const tempPath = `${DB_PATH}.tmp`;
-    fs.writeFileSync(tempPath, JSON.stringify(data, null, 2), 'utf-8');
-    fs.renameSync(tempPath, DB_PATH);
-
-    // Asynchronously synchronize with Supabase cloud if enabled
-    try {
-      pushAllToSupabase(data).catch(() => {});
-    } catch (_) {}
-
-    return true;
-  } catch (err) {
-    console.error('Error saving database file:', err);
-    return false;
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (_) {
+    // Expected on read-only environments like Vercel
   }
+
+  // 3. Background Supabase sync
+  try {
+    pushAllToSupabase(data).catch(() => {});
+  } catch (_) {}
+
+  return true;
+}
+
+export async function saveDatabaseAsync(data: LoxxyDatabase): Promise<boolean> {
+  globalDbRef.__loxxy_db = data;
+
+  // 1. Write to tmp file
+  try {
+    fs.writeFileSync(TMP_DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (tmpErr) {
+    console.warn('Could not write to tmp database file:', tmpErr);
+  }
+
+  // 2. Try writing to repository path
+  try {
+    const dir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (_) {
+    // Read-only serverless environment
+  }
+
+  // 3. Await Supabase cloud push so that data is guaranteed committed in PostgreSQL
+  try {
+    await pushAllToSupabase(data);
+    globalDbRef.__loxxy_last_sync = Date.now();
+  } catch (supErr) {
+    console.warn('Supabase sync notice during save:', supErr);
+  }
+
+  return true;
 }
 
 export function getSettings(): SiteSettings {
   return getDatabase().settings;
+}
+
+export async function getSettingsAsync(): Promise<SiteSettings> {
+  const db = await getDatabaseAsync();
+  return db.settings;
 }
 
 export function updateSettings(partial: Partial<SiteSettings>): SiteSettings {
@@ -863,12 +926,29 @@ export function updateSettings(partial: Partial<SiteSettings>): SiteSettings {
   return db.settings;
 }
 
+export async function updateSettingsAsync(partial: Partial<SiteSettings>): Promise<SiteSettings> {
+  const db = await getDatabaseAsync();
+  db.settings = { ...db.settings, ...partial };
+  await saveDatabaseAsync(db);
+  return db.settings;
+}
+
 export function getPlayers(): Player[] {
   return getDatabase().players;
 }
 
+export async function getPlayersAsync(): Promise<Player[]> {
+  const db = await getDatabaseAsync();
+  return db.players;
+}
+
 export function getPlayerById(id: string): Player | undefined {
   return getDatabase().players.find(p => p.id === id || p.ign.toLowerCase() === id.toLowerCase());
+}
+
+export async function getPlayerByIdAsync(id: string): Promise<Player | undefined> {
+  const db = await getDatabaseAsync();
+  return db.players.find(p => p.id === id || p.ign.toLowerCase() === id.toLowerCase());
 }
 
 export function createPlayer(player: Player): Player {
@@ -878,6 +958,16 @@ export function createPlayer(player: Player): Player {
   }
   db.players.push(player);
   saveDatabase(db);
+  return player;
+}
+
+export async function createPlayerAsync(player: Player): Promise<Player> {
+  const db = await getDatabaseAsync();
+  if (!player.powerIndex) {
+    player.powerIndex = calculatePowerIndex(player);
+  }
+  db.players.push(player);
+  await saveDatabaseAsync(db);
   return player;
 }
 
@@ -893,6 +983,18 @@ export function updatePlayer(id: string, partial: Partial<Player>): Player | nul
   return db.players[index];
 }
 
+export async function updatePlayerAsync(id: string, partial: Partial<Player>): Promise<Player | null> {
+  const db = await getDatabaseAsync();
+  const index = db.players.findIndex(p => p.id === id);
+  if (index === -1) return null;
+  db.players[index] = { ...db.players[index], ...partial };
+  if (!db.players[index].powerIndex) {
+    db.players[index].powerIndex = calculatePowerIndex(db.players[index]);
+  }
+  await saveDatabaseAsync(db);
+  return db.players[index];
+}
+
 export function deletePlayer(id: string): boolean {
   const db = getDatabase();
   const initialLen = db.players.length;
@@ -904,40 +1006,96 @@ export function deletePlayer(id: string): boolean {
   return false;
 }
 
+export async function deletePlayerAsync(id: string): Promise<boolean> {
+  const db = await getDatabaseAsync();
+  const initialLen = db.players.length;
+  db.players = db.players.filter(p => p.id !== id);
+  if (db.players.length !== initialLen) {
+    await saveDatabaseAsync(db);
+    return true;
+  }
+  return false;
+}
+
 export function getTiers(): TierDefinition[] {
   return getDatabase().tiers;
+}
+
+export async function getTiersAsync(): Promise<TierDefinition[]> {
+  const db = await getDatabaseAsync();
+  return db.tiers;
 }
 
 export function getGamemodes(): GamemodeDefinition[] {
   return getDatabase().gamemodes;
 }
 
+export async function getGamemodesAsync(): Promise<GamemodeDefinition[]> {
+  const db = await getDatabaseAsync();
+  return db.gamemodes;
+}
+
 export function getAchievements(): Achievement[] {
   return getDatabase().achievements;
+}
+
+export async function getAchievementsAsync(): Promise<Achievement[]> {
+  const db = await getDatabaseAsync();
+  return db.achievements;
 }
 
 export function getTimelineMilestones(): TimelineMilestone[] {
   return getDatabase().timelineMilestones || [];
 }
 
+export async function getTimelineMilestonesAsync(): Promise<TimelineMilestone[]> {
+  const db = await getDatabaseAsync();
+  return db.timelineMilestones || [];
+}
+
 export function getMatches(): MatchItem[] {
   return getDatabase().matches || [];
+}
+
+export async function getMatchesAsync(): Promise<MatchItem[]> {
+  const db = await getDatabaseAsync();
+  return db.matches || [];
 }
 
 export function getNews(): NewsItem[] {
   return getDatabase().news || [];
 }
 
+export async function getNewsAsync(): Promise<NewsItem[]> {
+  const db = await getDatabaseAsync();
+  return db.news || [];
+}
+
 export function getDominanceStats(): DominanceStat[] {
   return getDatabase().dominanceStats;
 }
 
+export async function getDominanceStatsAsync(): Promise<DominanceStat[]> {
+  const db = await getDatabaseAsync();
+  return db.dominanceStats;
+}
+
 export function getRecruitmentApplications(): RecruitmentApplication[] {
-  return getDatabase().recruitmentApplications;
+  return getDatabase().recruitmentApplications || [];
+}
+
+export async function getRecruitmentApplicationsAsync(): Promise<RecruitmentApplication[]> {
+  const db = await getDatabaseAsync();
+  return db.recruitmentApplications || [];
 }
 
 export function getRoles(): TeamRole[] {
   return getDatabase().roles || [];
+}
+
+export async function getRolesAsync(): Promise<TeamRole[]> {
+  const db = await getDatabaseAsync();
+  return db.roles || [];
 }
 
 export function createRole(role: TeamRole): TeamRole {
@@ -948,6 +1106,14 @@ export function createRole(role: TeamRole): TeamRole {
   return role;
 }
 
+export async function createRoleAsync(role: TeamRole): Promise<TeamRole> {
+  const db = await getDatabaseAsync();
+  if (!db.roles) db.roles = [];
+  db.roles.push(role);
+  await saveDatabaseAsync(db);
+  return role;
+}
+
 export function updateRole(id: string, partial: Partial<TeamRole>): TeamRole | null {
   const db = getDatabase();
   if (!db.roles) db.roles = [];
@@ -955,6 +1121,16 @@ export function updateRole(id: string, partial: Partial<TeamRole>): TeamRole | n
   if (index === -1) return null;
   db.roles[index] = { ...db.roles[index], ...partial };
   saveDatabase(db);
+  return db.roles[index];
+}
+
+export async function updateRoleAsync(id: string, partial: Partial<TeamRole>): Promise<TeamRole | null> {
+  const db = await getDatabaseAsync();
+  if (!db.roles) db.roles = [];
+  const index = db.roles.findIndex(r => r.id === id);
+  if (index === -1) return null;
+  db.roles[index] = { ...db.roles[index], ...partial };
+  await saveDatabaseAsync(db);
   return db.roles[index];
 }
 
@@ -970,8 +1146,25 @@ export function deleteRole(id: string): boolean {
   return false;
 }
 
+export async function deleteRoleAsync(id: string): Promise<boolean> {
+  const db = await getDatabaseAsync();
+  if (!db.roles) return false;
+  const initialLen = db.roles.length;
+  db.roles = db.roles.filter(r => r.id !== id);
+  if (db.roles.length !== initialLen) {
+    await saveDatabaseAsync(db);
+    return true;
+  }
+  return false;
+}
+
 export function getClips(): ClipItem[] {
   return getDatabase().clips || [];
+}
+
+export async function getClipsAsync(): Promise<ClipItem[]> {
+  const db = await getDatabaseAsync();
+  return db.clips || [];
 }
 
 export function createClip(clip: ClipItem): ClipItem {
@@ -979,6 +1172,14 @@ export function createClip(clip: ClipItem): ClipItem {
   if (!db.clips) db.clips = [];
   db.clips.unshift(clip);
   saveDatabase(db);
+  return clip;
+}
+
+export async function createClipAsync(clip: ClipItem): Promise<ClipItem> {
+  const db = await getDatabaseAsync();
+  if (!db.clips) db.clips = [];
+  db.clips.unshift(clip);
+  await saveDatabaseAsync(db);
   return clip;
 }
 
@@ -992,6 +1193,16 @@ export function updateClip(id: string, partial: Partial<ClipItem>): ClipItem | n
   return db.clips[index];
 }
 
+export async function updateClipAsync(id: string, partial: Partial<ClipItem>): Promise<ClipItem | null> {
+  const db = await getDatabaseAsync();
+  if (!db.clips) db.clips = [];
+  const index = db.clips.findIndex(c => c.id === id);
+  if (index === -1) return null;
+  db.clips[index] = { ...db.clips[index], ...partial };
+  await saveDatabaseAsync(db);
+  return db.clips[index];
+}
+
 export function deleteClip(id: string): boolean {
   const db = getDatabase();
   if (!db.clips) return false;
@@ -999,6 +1210,18 @@ export function deleteClip(id: string): boolean {
   db.clips = db.clips.filter(c => c.id !== id);
   if (db.clips.length !== initialLen) {
     saveDatabase(db);
+    return true;
+  }
+  return false;
+}
+
+export async function deleteClipAsync(id: string): Promise<boolean> {
+  const db = await getDatabaseAsync();
+  if (!db.clips) return false;
+  const initialLen = db.clips.length;
+  db.clips = db.clips.filter(c => c.id !== id);
+  if (db.clips.length !== initialLen) {
+    await saveDatabaseAsync(db);
     return true;
   }
   return false;

@@ -36,7 +36,10 @@ export default function ClipsPage() {
   useEffect(() => {
     async function loadData() {
       try {
-        const res = await fetch('/api/data');
+        const res = await fetch(`/api/data?t=${Date.now()}`, {
+          cache: 'no-store',
+          headers: { 'Cache-Control': 'no-cache' },
+        });
         const json = await res.json();
         if (json.success && json.data) {
           setSettings(json.data.settings);

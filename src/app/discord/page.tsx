@@ -1,15 +1,15 @@
-import React from 'react';
-import { getSettings } from '@/lib/db';
+import { getSettingsAsync } from '@/lib/db';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import RecruitmentForm from '@/components/discord/RecruitmentForm';
 import Link from 'next/link';
 import { MessageSquare, Users, Shield, Lock, ExternalLink, Sparkles, CheckCircle2, ChevronRight, Swords } from 'lucide-react';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export default function DiscordPage() {
-  const settings = getSettings();
+export default async function DiscordPage() {
+  const settings = await getSettingsAsync();
   const isEnabled = settings.discordPageEnabled;
 
   return (

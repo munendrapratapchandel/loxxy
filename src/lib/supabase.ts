@@ -1,6 +1,6 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { getAppConfig } from './config';
-import { LoxxyDatabase } from './types';
+import { LoxxyDatabase, Player, TeamRole, ClipItem, TierDefinition, MatchItem, Achievement } from './types';
 
 let cachedClient: SupabaseClient | null = null;
 let lastUsedUrl = '';
@@ -65,7 +65,6 @@ export async function testSupabaseConnection(customUrl?: string, customKey?: str
 
   const startTime = Date.now();
   try {
-    // Ping Supabase project endpoint
     const response = await fetch(`${url.replace(/\/+$/, '')}/rest/v1/`, {
       headers: {
         apikey: key,
@@ -76,14 +75,13 @@ export async function testSupabaseConnection(customUrl?: string, customKey?: str
     const latencyMs = Date.now() - startTime;
 
     if (response.ok || response.status === 200 || response.status === 404 || response.status === 401) {
-      // If 401, key might be invalid
       if (response.status === 401) {
         return {
           connected: false,
           latencyMs,
           message: 'Authentication failed. Please verify your Supabase API Key.',
           url,
-          hasServiceRole: !!config.supabase.serviceRoleKey,
+          hasServiceRole: false,
         };
       }
 
@@ -111,6 +109,167 @@ export async function testSupabaseConnection(customUrl?: string, customKey?: str
       url,
       hasServiceRole: false,
     };
+  }
+}
+
+/**
+ * Pulls all database records from Supabase tables and reconstructs the complete LoxxyDatabase.
+ */
+export async function pullAllFromSupabase(): Promise<LoxxyDatabase | null> {
+  const supabase = getSupabase();
+  if (!supabase) return null;
+
+  try {
+    let resultDb: Partial<LoxxyDatabase> = {};
+
+    // 1. Try pulling full database snapshot from loxxy_settings
+    try {
+      const { data: snapshotRows, error: snapshotErr } = await supabase
+        .from('loxxy_settings')
+        .select('*')
+        .eq('id', 'loxxy_full_db')
+        .limit(1);
+
+      if (!snapshotErr && snapshotRows && snapshotRows.length > 0 && snapshotRows[0].data) {
+        resultDb = snapshotRows[0].data as LoxxyDatabase;
+      }
+    } catch (_) {}
+
+    // 2. Overlay individual site settings if exists
+    try {
+      const { data: settingsRows } = await supabase
+        .from('loxxy_settings')
+        .select('*')
+        .eq('id', 'loxxy_global')
+        .limit(1);
+
+      if (settingsRows && settingsRows.length > 0 && settingsRows[0].data) {
+        resultDb.settings = { ...(resultDb.settings || {}), ...settingsRows[0].data };
+      }
+    } catch (_) {}
+
+    // 3. Overlay players from loxxy_players if table has rows
+    try {
+      const { data: playerRows } = await supabase.from('loxxy_players').select('*');
+      if (playerRows && playerRows.length > 0) {
+        resultDb.players = playerRows.map((r: any): Player => ({
+          id: r.id,
+          ign: r.ign,
+          name: r.name,
+          role: r.role || 'Member',
+          skinUrl: r.skin_url || '/skins/steve.png',
+          avatarUrl: r.avatar_url || `https://mc-heads.net/avatar/${r.ign}/100`,
+          joinDate: r.join_date || '',
+          status: r.status || 'Active',
+          featured: !!r.featured,
+          region: r.region || 'Global',
+          mainGamemode: r.main_gamemode || 'Sword PvP',
+          bio: r.bio || '',
+          powerIndex: Number(r.power_index) || 0,
+          pvpTiers: r.pvp_tiers || {},
+          skills: r.skills || {},
+          socials: r.socials || {},
+        }));
+      }
+    } catch (_) {}
+
+    // 4. Overlay roles from loxxy_roles if table has rows
+    try {
+      const { data: roleRows } = await supabase.from('loxxy_roles').select('*');
+      if (roleRows && roleRows.length > 0) {
+        resultDb.roles = roleRows.map((r: any): TeamRole => ({
+          id: r.id,
+          name: r.name,
+          color: r.color || '#00f5ff',
+          badgeStyle: r.badge_style || '',
+          description: r.description || '',
+          isDefault: !!r.is_default,
+        }));
+      }
+    } catch (_) {}
+
+    // 5. Overlay clips from loxxy_clips if table has rows
+    try {
+      const { data: clipRows } = await supabase.from('loxxy_clips').select('*');
+      if (clipRows && clipRows.length > 0) {
+        resultDb.clips = clipRows.map((c: any): ClipItem => ({
+          id: c.id,
+          title: c.title,
+          category: c.category || 'Tournament Clutch',
+          mediaType: c.media_type || 'video',
+          url: c.url,
+          thumbnailUrl: c.thumbnail_url || '',
+          authorOrPlayer: c.author_or_player || '',
+          gamemode: c.gamemode || '',
+          date: c.date || '',
+          description: c.description || '',
+          featured: !!c.featured,
+        }));
+      }
+    } catch (_) {}
+
+    // 6. Overlay tiers from loxxy_tiers if table has rows
+    try {
+      const { data: tierRows } = await supabase.from('loxxy_tiers').select('*');
+      if (tierRows && tierRows.length > 0) {
+        resultDb.tiers = tierRows.map((t: any): TierDefinition => ({
+          id: t.id,
+          name: t.name,
+          badgeTitle: t.badge_title,
+          type: t.type,
+          level: t.level,
+          color: t.color,
+          glowColor: t.glow_color,
+          badgeGradient: t.badge_gradient,
+          description: t.description,
+        }));
+      }
+    } catch (_) {}
+
+    // 7. Overlay matches from loxxy_matches if table has rows
+    try {
+      const { data: matchRows } = await supabase.from('loxxy_matches').select('*');
+      if (matchRows && matchRows.length > 0) {
+        resultDb.matches = matchRows.map((m: any): MatchItem => ({
+          id: m.id,
+          opponent: m.opponent,
+          opponentTag: m.opponent_tag || '',
+          date: m.date,
+          tournament: m.tournament,
+          gamemode: m.gamemode,
+          status: m.status,
+          result: m.result || null,
+          score: m.score || '',
+          vodUrl: m.vod_url || '',
+        }));
+      }
+    } catch (_) {}
+
+    // 8. Overlay achievements from loxxy_achievements if table has rows
+    try {
+      const { data: achRows } = await supabase.from('loxxy_achievements').select('*');
+      if (achRows && achRows.length > 0) {
+        resultDb.achievements = achRows.map((a: any): Achievement => ({
+          id: a.id,
+          title: a.title,
+          description: a.description,
+          date: a.date,
+          category: a.category,
+          result: a.result,
+          imageUrl: a.image_url,
+          linkedPlayers: a.linked_players || [],
+        }));
+      }
+    } catch (_) {}
+
+    if (resultDb.settings && resultDb.players && resultDb.players.length > 0) {
+      return resultDb as LoxxyDatabase;
+    }
+
+    return null;
+  } catch (err) {
+    console.warn('Could not pull database from Supabase:', err);
+    return null;
   }
 }
 
@@ -149,7 +308,17 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     }
   };
 
-  // 1. Settings (store as single row with id='loxxy_global')
+  // 1. Snapshot store in loxxy_settings as backup (id='loxxy_full_db')
+  try {
+    const { error: fullDbErr } = await supabase
+      .from('loxxy_settings')
+      .upsert([{ id: 'loxxy_full_db', data: db, updated_at: new Date().toISOString() }], {
+        onConflict: 'id',
+      });
+    if (!fullDbErr) syncedTables.push('loxxy_settings (full snapshot)');
+  } catch (_) {}
+
+  // 2. Settings (store as single row with id='loxxy_global')
   try {
     const { error } = await supabase
       .from('loxxy_settings')
@@ -162,7 +331,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     errors.push(`Settings: ${e.message}`);
   }
 
-  // 2. Players
+  // 3. Players
   if (db.players && db.players.length > 0) {
     await safeUpsert(
       'loxxy_players',
@@ -188,7 +357,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     );
   }
 
-  // 3. Roles
+  // 4. Roles
   if (db.roles && db.roles.length > 0) {
     await safeUpsert(
       'loxxy_roles',
@@ -203,7 +372,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     );
   }
 
-  // 4. Clips
+  // 5. Clips
   if (db.clips && db.clips.length > 0) {
     await safeUpsert(
       'loxxy_clips',
@@ -224,7 +393,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     );
   }
 
-  // 5. Tiers
+  // 6. Tiers
   if (db.tiers && db.tiers.length > 0) {
     await safeUpsert(
       'loxxy_tiers',
@@ -242,7 +411,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     );
   }
 
-  // 6. Matches
+  // 7. Matches
   if (db.matches && db.matches.length > 0) {
     await safeUpsert(
       'loxxy_matches',
@@ -261,7 +430,7 @@ export async function pushAllToSupabase(db: LoxxyDatabase): Promise<{
     );
   }
 
-  // 7. Achievements
+  // 8. Achievements
   if (db.achievements && db.achievements.length > 0) {
     await safeUpsert(
       'loxxy_achievements',
@@ -387,8 +556,7 @@ CREATE TABLE IF NOT EXISTS public.loxxy_achievements (
   linked_players JSONB DEFAULT '[]'::jsonb
 );
 
--- Row Level Security (RLS) Policies
--- Allow public read access to all Loxxy tables
+-- Enable Row Level Security (RLS)
 ALTER TABLE public.loxxy_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_roles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_players ENABLE ROW LEVEL SECURITY;
@@ -397,47 +565,26 @@ ALTER TABLE public.loxxy_tiers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_achievements ENABLE ROW LEVEL SECURITY;
 
-DROP POLICY IF EXISTS "Public Read Settings" ON public.loxxy_settings;
-CREATE POLICY "Public Read Settings" ON public.loxxy_settings FOR SELECT USING (true);
+-- Allow full access for both Anon API Key & Service Role Key
+DROP POLICY IF EXISTS "Public Access Settings" ON public.loxxy_settings;
+CREATE POLICY "Public Access Settings" ON public.loxxy_settings FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Roles" ON public.loxxy_roles;
-CREATE POLICY "Public Read Roles" ON public.loxxy_roles FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Access Roles" ON public.loxxy_roles;
+CREATE POLICY "Public Access Roles" ON public.loxxy_roles FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Players" ON public.loxxy_players;
-CREATE POLICY "Public Read Players" ON public.loxxy_players FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Access Players" ON public.loxxy_players;
+CREATE POLICY "Public Access Players" ON public.loxxy_players FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Clips" ON public.loxxy_clips;
-CREATE POLICY "Public Read Clips" ON public.loxxy_clips FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Access Clips" ON public.loxxy_clips;
+CREATE POLICY "Public Access Clips" ON public.loxxy_clips FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Tiers" ON public.loxxy_tiers;
-CREATE POLICY "Public Read Tiers" ON public.loxxy_tiers FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Access Tiers" ON public.loxxy_tiers;
+CREATE POLICY "Public Access Tiers" ON public.loxxy_tiers FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Matches" ON public.loxxy_matches;
-CREATE POLICY "Public Read Matches" ON public.loxxy_matches FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Public Access Matches" ON public.loxxy_matches;
+CREATE POLICY "Public Access Matches" ON public.loxxy_matches FOR ALL USING (true) WITH CHECK (true);
 
-DROP POLICY IF EXISTS "Public Read Achievements" ON public.loxxy_achievements;
-CREATE POLICY "Public Read Achievements" ON public.loxxy_achievements FOR SELECT USING (true);
-
--- Allow service role full access
-DROP POLICY IF EXISTS "Admin Full Access Settings" ON public.loxxy_settings;
-CREATE POLICY "Admin Full Access Settings" ON public.loxxy_settings USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Roles" ON public.loxxy_roles;
-CREATE POLICY "Admin Full Access Roles" ON public.loxxy_roles USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Players" ON public.loxxy_players;
-CREATE POLICY "Admin Full Access Players" ON public.loxxy_players USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Clips" ON public.loxxy_clips;
-CREATE POLICY "Admin Full Access Clips" ON public.loxxy_clips USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Tiers" ON public.loxxy_tiers;
-CREATE POLICY "Admin Full Access Tiers" ON public.loxxy_tiers USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Matches" ON public.loxxy_matches;
-CREATE POLICY "Admin Full Access Matches" ON public.loxxy_matches USING (auth.role() = 'service_role');
-
-DROP POLICY IF EXISTS "Admin Full Access Achievements" ON public.loxxy_achievements;
-CREATE POLICY "Admin Full Access Achievements" ON public.loxxy_achievements USING (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Public Access Achievements" ON public.loxxy_achievements;
+CREATE POLICY "Public Access Achievements" ON public.loxxy_achievements FOR ALL USING (true) WITH CHECK (true);
 `;
 }
