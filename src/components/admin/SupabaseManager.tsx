@@ -20,7 +20,8 @@ import {
   ArrowRight,
   Send,
   MessageSquare,
-  Radio
+  Radio,
+  ExternalLink
 } from 'lucide-react';
 
 interface SupabaseConfigData {
@@ -82,6 +83,7 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
     syncedTables?: string[];
     errors?: string[];
   } | null>(null);
+  const [creatingTables, setCreatingTables] = useState(false);
 
   // SQL schema tab
   const [sqlSchema, setSqlSchema] = useState<string>('');
@@ -218,6 +220,32 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
       });
     } finally {
       setSyncing(false);
+    }
+  };
+
+  const handleAutoCreateTables = async () => {
+    if (!databaseUrl && !url) {
+      alert('Please enter your Supabase Project URL or PostgreSQL Connection String first.');
+      return;
+    }
+    setCreatingTables(true);
+    try {
+      const res = await fetch('/api/supabase/init-tables', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ databaseUrl }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('All Loxxy tables and security policies created successfully in PostgreSQL! Now syncing data...');
+        await handlePushToSupabase();
+      } else {
+        alert(data.error || 'Failed to auto-create tables. Please run the SQL schema in Supabase SQL Editor.');
+      }
+    } catch (e: any) {
+      alert(e.message || 'Error creating tables');
+    } finally {
+      setCreatingTables(false);
     }
   };
 
@@ -366,6 +394,59 @@ export default function SupabaseManager({ onRefresh }: { onRefresh: () => void }
                 ))}
               </div>
             )}
+
+            {syncResult.errors &&
+              syncResult.errors.some(
+                (e) =>
+                  e.includes('Could not find the table') || e.includes('schema cache')
+              ) && (
+                <div className="mt-3 p-4 rounded-xl bg-dark-900 border border-amber-500/40 space-y-3">
+                  <div className="flex items-center gap-2 text-amber-300 font-bold">
+                    <AlertCircle className="w-4 h-4" />
+                    <span>Why this happens & 1-Click Fix:</span>
+                  </div>
+                  <p className="text-slate-300 text-[11px] leading-relaxed">
+                    Your Supabase project is active, but the database tables (<code className="text-cyan-300">loxxy_settings</code>, <code className="text-cyan-300">loxxy_players</code>, etc.) haven&apos;t been created in PostgreSQL yet.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {databaseUrl ? (
+                      <button
+                        type="button"
+                        onClick={handleAutoCreateTables}
+                        disabled={creatingTables}
+                        className="px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-brand-600 to-cyan-500 hover:from-brand-500 hover:to-cyan-400 text-white font-bold text-xs flex items-center gap-1.5 shadow-glow-sm"
+                      >
+                        <Zap className="w-3.5 h-3.5" />
+                        <span>{creatingTables ? 'Creating Tables...' : 'Auto-Create Tables via Postgres'}</span>
+                      </button>
+                    ) : null}
+                    <button
+                      type="button"
+                      onClick={handleCopySql}
+                      className="px-3.5 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-xs text-cyan-300 border border-cyan-500/40 flex items-center gap-1.5"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>{copiedSql ? 'Copied SQL!' : 'Copy SQL Schema for Supabase'}</span>
+                    </button>
+                    <a
+                      href="https://supabase.com/dashboard"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3.5 py-1.5 rounded-lg bg-dark-850 hover:bg-dark-800 text-xs text-slate-300 border border-slate-700 flex items-center gap-1.5"
+                    >
+                      <span>Open Supabase Dashboard</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                  <div className="text-[11px] text-slate-400 bg-dark-950 p-2.5 rounded-lg border border-slate-800 space-y-0.5">
+                    <div><strong className="text-white">Fastest Fix in Supabase Dashboard (10 seconds):</strong></div>
+                    <div>1. Click <strong>Copy SQL Schema for Supabase</strong> above.</div>
+                    <div>2. Go to your Supabase project → Click <strong>SQL Editor</strong> on the left (looks like <code>&gt;_</code>).</div>
+                    <div>3. Click <strong>New query</strong>, paste (Ctrl+V), and click <strong>RUN</strong>.</div>
+                    <div>4. Return here and click <strong>Sync to Supabase</strong> to upload all your athletes &amp; data!</div>
+                  </div>
+                </div>
+              )}
           </div>
         )}
       </div>

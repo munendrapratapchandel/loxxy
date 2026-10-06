@@ -397,21 +397,47 @@ ALTER TABLE public.loxxy_tiers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.loxxy_achievements ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Public Read Settings" ON public.loxxy_settings;
 CREATE POLICY "Public Read Settings" ON public.loxxy_settings FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Roles" ON public.loxxy_roles;
 CREATE POLICY "Public Read Roles" ON public.loxxy_roles FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Players" ON public.loxxy_players;
 CREATE POLICY "Public Read Players" ON public.loxxy_players FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Clips" ON public.loxxy_clips;
 CREATE POLICY "Public Read Clips" ON public.loxxy_clips FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Tiers" ON public.loxxy_tiers;
 CREATE POLICY "Public Read Tiers" ON public.loxxy_tiers FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Matches" ON public.loxxy_matches;
 CREATE POLICY "Public Read Matches" ON public.loxxy_matches FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Public Read Achievements" ON public.loxxy_achievements;
 CREATE POLICY "Public Read Achievements" ON public.loxxy_achievements FOR SELECT USING (true);
 
 -- Allow service role full access
+DROP POLICY IF EXISTS "Admin Full Access Settings" ON public.loxxy_settings;
 CREATE POLICY "Admin Full Access Settings" ON public.loxxy_settings USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Roles" ON public.loxxy_roles;
 CREATE POLICY "Admin Full Access Roles" ON public.loxxy_roles USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Players" ON public.loxxy_players;
 CREATE POLICY "Admin Full Access Players" ON public.loxxy_players USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Clips" ON public.loxxy_clips;
 CREATE POLICY "Admin Full Access Clips" ON public.loxxy_clips USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Tiers" ON public.loxxy_tiers;
 CREATE POLICY "Admin Full Access Tiers" ON public.loxxy_tiers USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Matches" ON public.loxxy_matches;
 CREATE POLICY "Admin Full Access Matches" ON public.loxxy_matches USING (auth.role() = 'service_role');
+
+DROP POLICY IF EXISTS "Admin Full Access Achievements" ON public.loxxy_achievements;
 CREATE POLICY "Admin Full Access Achievements" ON public.loxxy_achievements USING (auth.role() = 'service_role');
 `;
 }
