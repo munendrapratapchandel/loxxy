@@ -52,13 +52,15 @@ export default function PlayersManager({
     status: 'Active',
     featured: false,
     region: 'NA East',
-    mainGamemode: 'Sword PvP',
+    mainGamemode: 'Mace',
     bio: '',
     pvpTiers: {
-      'Sword': 'HT2',
-      'Axe': 'HT2',
-      'Crystal': 'LT1',
       'Mace': 'HT2',
+      'Netpot': 'HT2',
+      'Crystal': 'LT1',
+      'Spear Mace': 'HT2',
+      'UHC': 'HT2',
+      'Elytra Mace': 'HT2',
     },
     skills: {
       'PvP': 90,
@@ -77,13 +79,36 @@ export default function PlayersManager({
     },
   };
 
+  const normalizePlayerTiers = (p: Player): Player => {
+    const clone = JSON.parse(JSON.stringify(p));
+    const tiers = { ...(clone.pvpTiers || {}) };
+    const newTiers: Record<string, string> = {};
+
+    // Replacement mapping:
+    // Sword -> Mace
+    // Axe -> Netpot
+    // Crystal -> Crystal
+    // Mace -> Spear Mace
+    // UHC -> UHC
+    // Bedwars -> Elytra Mace
+    newTiers['Mace'] = tiers['Mace'] || tiers['Sword'] || 'HT2';
+    newTiers['Netpot'] = tiers['Netpot'] || tiers['Axe'] || 'HT2';
+    newTiers['Crystal'] = tiers['Crystal'] || 'LT1';
+    newTiers['Spear Mace'] = tiers['Spear Mace'] || (tiers['Sword'] ? tiers['Mace'] : undefined) || 'HT2';
+    newTiers['UHC'] = tiers['UHC'] || 'HT2';
+    newTiers['Elytra Mace'] = tiers['Elytra Mace'] || tiers['Bedwars'] || 'HT2';
+
+    clone.pvpTiers = newTiers;
+    return clone;
+  };
+
   const handleStartCreate = () => {
     setEditingPlayer({ ...defaultNewPlayer, id: `player-${Date.now()}` });
     setIsCreating(true);
   };
 
   const handleEdit = (p: Player) => {
-    setEditingPlayer(JSON.parse(JSON.stringify(p)));
+    setEditingPlayer(normalizePlayerTiers(p));
     setIsCreating(false);
   };
 
@@ -564,7 +589,7 @@ export default function PlayersManager({
                   PvP Gamemode Tiers (HT1..HT5 / LT1..LT5)
                 </span>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {['Sword', 'Axe', 'Crystal', 'Mace', 'UHC', 'Bedwars'].map((mode) => (
+                  {['Mace', 'Netpot', 'Crystal', 'Spear Mace', 'UHC', 'Elytra Mace'].map((mode) => (
                     <div key={mode} className="space-y-1">
                       <label className="text-[11px] font-mono text-slate-400">{mode}</label>
                       <select

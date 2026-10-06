@@ -75,12 +75,12 @@ export default function RosterView({ players, gamemodes, tiers }: RosterViewProp
 
   const gamemodeFilters = [
     { id: 'all', label: 'All Modes' },
-    { id: 'sword', label: 'Sword' },
-    { id: 'axe', label: 'Axe' },
-    { id: 'crystal', label: 'Crystal' },
     { id: 'mace', label: 'Mace' },
+    { id: 'netpot', label: 'Netpot' },
+    { id: 'crystal', label: 'Crystal' },
+    { id: 'spear mace', label: 'Spear Mace' },
     { id: 'uhc', label: 'UHC' },
-    { id: 'bedwars', label: 'Bedwars' },
+    { id: 'elytra mace', label: 'Elytra Mace' },
     { id: 'building', label: 'Building' },
     { id: 'redstone', label: 'Redstone' },
   ];

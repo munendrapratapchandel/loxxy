@@ -35,7 +35,7 @@ export default function ComparePage() {
   const playerA = players.find((p) => p.id === playerAId) || players[0];
   const playerB = players.find((p) => p.id === playerBId) || players[1] || players[0];
 
-  const allGamemodes = ['Sword', 'Axe', 'Crystal', 'Mace', 'UHC', 'Bedwars'];
+  const allGamemodes = ['Mace', 'Netpot', 'Crystal', 'Spear Mace', 'UHC', 'Elytra Mace'];
   const allSkills = ['PvP', 'Building', 'Redstone', 'Clutching', 'Game Sense', 'Parkour'];
 
   return (

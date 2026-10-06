@@ -203,14 +203,12 @@ const INITIAL_DATA: LoxxyDatabase = {
     }
   ],
   gamemodes: [
-    { id: 'sword', name: 'Sword PvP', icon: 'Swords', description: 'Classic & modern 1.9+ sword mechanics, hit selection, and shield disables.' },
-    { id: 'axe', name: 'Axe PvP', icon: 'Axe', description: 'Shield crits, spacing control, and burst axe damage.' },
-    { id: 'crystal', name: 'Crystal PvP', icon: 'Sparkles', description: 'Anchor explosions, totem popping, and hyper-speed crystal placements.' },
-    { id: 'mace', name: 'Mace PvP', icon: 'Hammer', description: 'Heavy smash attacks, wind charge launches, and aerial precision.' },
+    { id: 'mace', name: 'Mace', icon: 'Hammer', description: 'Heavy smash attacks, wind charge launches, and aerial precision.' },
+    { id: 'netpot', name: 'Netpot', icon: 'FlaskConical', description: 'Netherite potion combat, debuff cycling, fast potting, and speed II strafing.' },
+    { id: 'crystal', name: 'Crystal', icon: 'Sparkles', description: 'Anchor explosions, totem popping, and hyper-speed crystal placements.' },
+    { id: 'spear_mace', name: 'Spear Mace', icon: 'Swords', description: 'Long-range spear thrusts and heavy mace kinetic impact.' },
     { id: 'uhc', name: 'UHC', icon: 'Heart', description: 'Ultra Hardcore combat, golden apples, rod control, and lava placement.' },
-    { id: 'bedwars', name: 'Bedwars', icon: 'Bed', description: 'Fast-paced bridging, bed defense breaking, fireball jumping, and void clutches.' },
-    { id: 'pot', name: 'Netherite Pot', icon: 'FlaskConical', description: 'Debuff cycling, fast potting, speed II strafing, and inventory management.' },
-    { id: 'smp', name: 'SMP / Survival', icon: 'Shield', description: 'End-game survival PvP, elytras, firework rocketing, and clan wars.' }
+    { id: 'elytra_mace', name: 'Elytra Mace', icon: 'Shield', description: 'High-velocity aerial gliding strikes, dive bomb smash attacks, and kinetic bursts.' }
   ],
   players: [
     {
@@ -224,16 +222,16 @@ const INITIAL_DATA: LoxxyDatabase = {
       status: 'Captain',
       featured: true,
       region: 'NA East',
-      mainGamemode: 'Sword PvP',
-      bio: 'Founder and tactical leader of Loxxy. Renowned for surgical sword spacing, wind-charge combos, and peak HT1 match leadership.',
+      mainGamemode: 'Mace',
+      bio: 'Founder and tactical leader of Loxxy. Renowned for surgical mace spacing, wind-charge combos, and peak HT1 match leadership.',
       powerIndex: 98.7,
       pvpTiers: {
-        'Sword': 'HT1',
-        'Axe': 'HT2',
-        'Crystal': 'LT1',
         'Mace': 'HT1',
+        'Netpot': 'HT2',
+        'Crystal': 'LT1',
+        'Spear Mace': 'HT1',
         'UHC': 'LT2',
-        'Bedwars': 'HT2'
+        'Elytra Mace': 'HT2'
       },
       skills: {
         'PvP': 98,
@@ -271,16 +269,16 @@ const INITIAL_DATA: LoxxyDatabase = {
       status: 'Active',
       featured: true,
       region: 'EU Central',
-      mainGamemode: 'Crystal PvP',
+      mainGamemode: 'Crystal',
       bio: 'Co-Owner of Loxxy and feared anchor/crystal master. Dominates Netherite Pot and Crystal brackets with lightning-fast reaction speeds.',
       powerIndex: 96.4,
       pvpTiers: {
-        'Sword': 'HT2',
-        'Axe': 'HT2',
-        'Crystal': 'HT1',
         'Mace': 'HT2',
+        'Netpot': 'HT2',
+        'Crystal': 'HT1',
+        'Spear Mace': 'HT2',
         'UHC': 'HT2',
-        'Bedwars': 'HT1'
+        'Elytra Mace': 'HT1'
       },
       skills: {
         'PvP': 96,
@@ -312,16 +310,16 @@ const INITIAL_DATA: LoxxyDatabase = {
       status: 'Active',
       featured: true,
       region: 'NA West',
-      mainGamemode: 'Mace PvP',
+      mainGamemode: 'Spear Mace',
       bio: 'Acrobatic mace prodigy. Masters aerial momentum, wind-charge vaults, and one-shot devastating smashes in competitive league matches.',
       powerIndex: 97.2,
       pvpTiers: {
-        'Sword': 'HT1',
-        'Axe': 'HT1',
-        'Crystal': 'LT1',
         'Mace': 'HT1',
+        'Netpot': 'HT1',
+        'Crystal': 'LT1',
+        'Spear Mace': 'HT1',
         'UHC': 'HT1',
-        'Bedwars': 'HT2'
+        'Elytra Mace': 'HT2'
       },
       skills: {
         'PvP': 99,
@@ -353,16 +351,16 @@ const INITIAL_DATA: LoxxyDatabase = {
       status: 'Active',
       featured: false,
       region: 'EU West',
-      mainGamemode: 'Axe PvP',
+      mainGamemode: 'Netpot',
       bio: 'Unshakable shield disabling frontline. Controls the center arena and secures eliminations with calculated crits and spacing.',
       powerIndex: 94.8,
       pvpTiers: {
-        'Sword': 'HT2',
-        'Axe': 'HT1',
-        'Crystal': 'LT2',
         'Mace': 'HT2',
+        'Netpot': 'HT1',
+        'Crystal': 'LT2',
+        'Spear Mace': 'HT2',
         'UHC': 'HT1',
-        'Bedwars': 'LT1'
+        'Elytra Mace': 'LT1'
       },
       skills: {
         'PvP': 93,
@@ -388,16 +386,16 @@ const INITIAL_DATA: LoxxyDatabase = {
       status: 'Active',
       featured: false,
       region: 'NA East',
-      mainGamemode: 'Bedwars',
+      mainGamemode: 'Elytra Mace',
       bio: 'Hyperspeed void clutcher and community entertainer with over 200k subscribers documenting Loxxy clan wars and high-tier highlights.',
       powerIndex: 93.5,
       pvpTiers: {
-        'Sword': 'HT2',
-        'Axe': 'LT1',
+        'Mace': 'HT2',
+        'Netpot': 'LT1',
         'Crystal': 'LT2',
-        'Mace': 'LT1',
+        'Spear Mace': 'LT1',
         'UHC': 'LT1',
-        'Bedwars': 'HT1'
+        'Elytra Mace': 'HT1'
       },
       skills: {
         'PvP': 91,
@@ -428,12 +426,12 @@ const INITIAL_DATA: LoxxyDatabase = {
       bio: 'Chief architect responsible for Loxxy private practice arenas, cinematic tournament builds, and redstone combat training circuits.',
       powerIndex: 89.2,
       pvpTiers: {
-        'Sword': 'LT2',
-        'Axe': 'LT2',
-        'Crystal': 'LT3',
         'Mace': 'LT2',
+        'Netpot': 'LT2',
+        'Crystal': 'LT3',
+        'Spear Mace': 'LT2',
         'UHC': 'LT2',
-        'Bedwars': 'LT1'
+        'Elytra Mace': 'LT1'
       },
       skills: {
         'PvP': 80,
@@ -831,6 +829,24 @@ function mergeDefaults(parsed: LoxxyDatabase): void {
 
   if (parsed.players && Array.isArray(parsed.players)) {
     parsed.players.forEach((p) => {
+      if (p.pvpTiers) {
+        if (p.pvpTiers['Sword'] || p.pvpTiers['Axe'] || p.pvpTiers['Bedwars'] || !p.pvpTiers['Spear Mace']) {
+          const old = { ...p.pvpTiers };
+          p.pvpTiers = {
+            'Mace': old['Mace'] && !old['Sword'] ? old['Mace'] : (old['Sword'] || old['Mace'] || 'HT2'),
+            'Netpot': old['Netpot'] || old['Axe'] || 'HT2',
+            'Crystal': old['Crystal'] || 'LT1',
+            'Spear Mace': old['Spear Mace'] || (old['Sword'] ? old['Mace'] : undefined) || 'HT2',
+            'UHC': old['UHC'] || 'HT2',
+            'Elytra Mace': old['Elytra Mace'] || old['Bedwars'] || 'HT2',
+          };
+          if (p.mainGamemode === 'Sword PvP' || p.mainGamemode === 'Sword') p.mainGamemode = 'Mace';
+          if (p.mainGamemode === 'Axe PvP' || p.mainGamemode === 'Axe') p.mainGamemode = 'Netpot';
+          if (p.mainGamemode === 'Crystal PvP') p.mainGamemode = 'Crystal';
+          if (p.mainGamemode === 'Mace PvP') p.mainGamemode = 'Spear Mace';
+          if (p.mainGamemode === 'Bedwars') p.mainGamemode = 'Elytra Mace';
+        }
+      }
       if (!p.powerIndex) {
         p.powerIndex = calculatePowerIndex(p);
       }

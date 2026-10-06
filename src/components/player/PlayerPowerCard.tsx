@@ -160,7 +160,7 @@ export default function PlayerPowerCard({
           </div>
 
           <div className="grid grid-cols-2 gap-1.5">
-            {Object.entries(player.pvpTiers).slice(0, 4).map(([mode, tier]) => (
+            {Object.entries(player.pvpTiers).slice(0, 6).map(([mode, tier]) => (
               <div
                 key={mode}
                 className="flex items-center justify-between px-2 py-1 rounded-lg bg-dark-900 border border-slate-800 text-xs font-mono"
