@@ -37,7 +37,7 @@ const INITIAL_DATA: LoxxyDatabase = {
     discordPageEnabled: true,
     recruitmentEnabled: true,
     maintenanceMode: false,
-    adminPin: 'loxxy2026',
+    adminPin: 'loxxy@2580',
     liveStatus: {
       enabled: true,
       membersOnline: 24,
@@ -778,7 +778,7 @@ function ensureDbFile(): LoxxyDatabase {
     if (!parsed.news) { parsed.news = INITIAL_DATA.news; modified = true; }
     if (!parsed.timelineMilestones) { parsed.timelineMilestones = INITIAL_DATA.timelineMilestones; modified = true; }
     if (!parsed.settings.liveStatus) { parsed.settings.liveStatus = INITIAL_DATA.settings.liveStatus; modified = true; }
-    if (!parsed.settings.adminPin) { parsed.settings.adminPin = 'loxxy2026'; modified = true; }
+    if (!parsed.settings.adminPin) { parsed.settings.adminPin = 'loxxy@2580'; modified = true; }
     if (parsed.settings.navigation && parsed.settings.navigation.clips === undefined) {
       parsed.settings.navigation.clips = true;
       modified = true;

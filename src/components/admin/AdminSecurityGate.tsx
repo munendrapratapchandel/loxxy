@@ -22,7 +22,7 @@ export default function AdminSecurityGate({ correctPin, onAuthenticated }: Admin
 
   const handleUnlock = (e: React.FormEvent) => {
     e.preventDefault();
-    if (pinInput.trim() === (correctPin || 'loxxy2026')) {
+    if (pinInput.trim() === (correctPin || 'loxxy@2580')) {
       sessionStorage.setItem('loxxy_admin_auth', 'true');
       onAuthenticated();
     } else {

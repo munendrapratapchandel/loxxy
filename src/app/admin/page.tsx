@@ -129,7 +129,7 @@ export default function AdminPage() {
   if (!isAuthenticated) {
     return (
       <AdminSecurityGate
-        correctPin={db.settings.adminPin || 'loxxy2026'}
+        correctPin={db.settings.adminPin || 'loxxy@2580'}
         onAuthenticated={() => setIsAuthenticated(true)}
       />
     );

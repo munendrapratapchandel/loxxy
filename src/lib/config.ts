@@ -39,7 +39,7 @@ const DEFAULT_CONFIG: AppConfig = {
     twitchClientSecret: process.env.TWITCH_CLIENT_SECRET || '',
   },
   security: {
-    adminPin: process.env.ADMIN_PIN || 'loxxy2026',
+    adminPin: process.env.ADMIN_PIN || 'loxxy@2580',
   },
 };
 
